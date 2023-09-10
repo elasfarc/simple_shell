@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 #include "shell.h"
 
 #define SHELL_SIGN ("($) ")
@@ -36,5 +37,45 @@ void print_prompt(void)
 		perror("Error: print_prompt(..)");
 		exit(EXIT_FAILURE);
 	}
+}
+
+/**
+ * get_argv - extract args and fill the argv
+ * @cmd: string containing the whole command.
+ *
+ * Return: arguments vector; array of strings NULL terminated.
+ */
+char **get_argv(char *cmd)
+{
+	char **argv, *token, *cmd_cp, *sep = " \n";
+	size_t i, argc = 0;
+
+	cmd_cp = _strdup(cmd);
+
+	token = strtok(cmd, sep);
+	while (token)
+	{
+		argc++;
+		token = strtok(NULL, sep);
+	}
+
+	argv = malloc((sizeof(char *) * argc) + sizeof(NULL)); /* +1 for last NULL*/
+	if (!argv)
+	{
+		perror("Error: malloc @get_argv(..)");
+		exit(1);
+	}
+
+	token = strtok(cmd_cp, sep);
+	for (i = 0; i < argc; i++)
+	{
+		argv[i] = _strdup(token);
+		token = strtok(NULL, sep);
+	}
+
+	argv[argc] = NULL;
+
+	free(cmd_cp);
+	return (argv);
 }
 

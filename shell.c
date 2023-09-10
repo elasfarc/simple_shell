@@ -9,6 +9,8 @@
 #include <sys/stat.h>
 #include "shell.h"
 
+void clean(char *input, char **argv);
+
 /**
  * shell - the shell interface
  *	reads from stdin and execute the command given.
@@ -21,8 +23,9 @@ void shell(void)
 	size_t n = 0;
 	ssize_t rl, exe;
 	pid_t child_pid;
-	char *const *argv = {NULL};
+	char **argv = NULL;
 	short is_interactive = isatty(STDIN_FILENO);
+	char **env = environ;
 
 	while (should_prompt(is_interactive) &&
 			(rl = getline(&input, &n, stdin) > -1))
@@ -36,15 +39,15 @@ void shell(void)
 				exit(EXIT_FAILURE);
 			case 0:
 				token = strtok(input, "\n");
-				exe = execve(input, argv, NULL);
-				if (!token || (exe == -1))
+				if (token)
 				{
+					argv = get_argv(input);
+					exe = execve(input, argv, env);
 					if (exe == -1)
 						perror("");
-					free(input);
-					exit(1);
 				}
-				break;
+				clean(input, argv);
+				exit(1);
 			default:
 				wait(NULL);
 				/*free(input);*/
@@ -54,3 +57,25 @@ void shell(void)
 
 	free(input);
 }
+
+/**
+ * clean - free allocated memory
+ * @input: string allocated for the getline function.
+ * @argv: array of strings allocated to get args of the command.
+ *
+ * Return: void
+ */
+void clean(char *input, char **argv)
+{
+	int i;
+
+	free(input);
+	if (!argv)
+		return;
+	for (i = 0; argv[i]; i++)
+		free(argv[i]);
+
+	free(argv);
+
+}
+
