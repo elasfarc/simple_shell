@@ -1,8 +1,3 @@
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
 #include "shell.h"
 
 #define SHELL_SIGN ("($) ")
@@ -77,5 +72,41 @@ char **get_argv(char *cmd)
 
 	free(cmd_cp);
 	return (argv);
+}
+
+/**
+ * get_env_paths - get the enviroment PATH
+ *
+ * Return: An array of strings containing the PATH env variable.
+ */
+char **get_env_paths()
+{
+	char *path, *path_cp, *token, **paths, *sep = ":";
+	size_t i, pathes_n = 0;
+
+	path = getenv("PATH");
+	path_cp = _strdup(path);
+
+	token = strtok(path_cp, sep);
+	while (token)
+	{
+		pathes_n++;
+		token = strtok(NULL, sep);
+	}
+	free(path_cp);
+
+	paths = malloc((sizeof(char *) * pathes_n) + sizeof(NULL));
+	paths[pathes_n] = NULL;
+
+	path_cp = _strdup(path);
+	token = strtok(path_cp, sep);
+	for (i = 0; i < pathes_n; i++)
+	{
+		paths[i] = _strdup(token);
+		token = strtok(NULL, sep);
+	}
+
+	free(path_cp);
+	return (paths);
 }
 
