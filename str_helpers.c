@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
+#include "shell.h"
+
 /**
  * _strlen - get the length of a string.
  * @s: string to get it's length.
@@ -52,4 +51,42 @@ char *_strdup(char *s)
 	return (dup);
 }
 
+/**
+ * _strcat - concat a string in src to following string args.
+ * @src: source string to be the starting point of the concatenation.
+ *
+ * Return: the new concated string.
+ */
+char *_strcat(char *src, ...)
+{
+	va_list args;
+	char *arg;
+	size_t arg_len, current_len = 0;
+	size_t ch_idx, i, j;
+
+	if (!src)
+		return (NULL);
+
+	va_start(args, src);
+
+	current_len = _strlen(src) + 1;
+	ch_idx = current_len - 1;
+
+	while ((arg = va_arg(args, char *)))
+	{
+		arg_len = _strlen(arg);
+		src = (char *)_realloc(src, current_len, current_len + arg_len);
+
+		current_len += arg_len;
+
+		for (j = 0, i = ch_idx; i < current_len - 1; i++, j++)
+			src[i] = arg[j];
+
+		ch_idx = current_len - 1;
+	}
+
+	va_end(args);
+	src[current_len - 1] = '\0';
+	return (src);
+}
 
