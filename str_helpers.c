@@ -90,3 +90,31 @@ char *_strcat(char *src, ...)
 	return (src);
 }
 
+/**
+ * _is_str_equal_str - checks if @s1 is strictly equal @s2
+ * @s1: First string.
+ * @s2: Second string.
+ *
+ * Return: 1 if both string are strictly equal
+ *		0 otherwise.
+ */
+int _is_str_equal_str(char *s1, char *s2)
+{
+	size_t len1, len2, i;
+
+	if (!s1 || !s2)
+		return (0);
+
+	len1 = _strlen(s1);
+	len2 = _strlen(s2);
+
+	if (len1 != len2)
+		return (0);
+
+	for (i = 0; i < len1; i++)
+		if (s1[i] != s2[i])
+			return (0);
+	return (1);
+
+}
+
