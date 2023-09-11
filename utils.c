@@ -33,3 +33,32 @@ void *_realloc(void *ptr, size_t old_size, size_t new_size)
 	return (new_ptr);
 }
 
+/**
+ * _get_env - get an environment variable.
+ * @key: name of the env var
+ *
+ * Return: the enviroment variable value for the @key.
+ */
+char *_get_env(char *key)
+{
+	char **env, *token, *env_record, *value = NULL;
+	int i, is_match = 0;
+
+	if (!key)
+		return (NULL);
+
+	env = environ;
+	for (i = 0; (env[i] != NULL && !is_match); i++)
+	{
+		env_record = _strdup(env[i]);
+		token = strtok(env_record, "=");
+		if (_is_str_equal_str(key, token))
+		{
+			token = strtok(NULL, "=");
+			value = _strdup(token);
+			is_match = 1;
+		}
+		free(env_record);
+	}
+	return (value);
+}
