@@ -110,3 +110,48 @@ char **get_env_paths()
 	return (paths);
 }
 
+/**
+ * get_path - get the full path of a @cmd if any
+ * @cmd: the command to get it's full path from PATH enviroment variable.
+ *
+ * Return: the @cmd if it starts with '/' or '.'
+ *		,the full path of the command from the first match of PATH
+ *		otherwise NULL
+ */
+char *get_path(char *cmd)
+{
+	char **paths, *path;
+	int i, is_path = 0;
+	struct stat st;
+
+	if (cmd[0] == '/' || cmd[0] == '.')
+		return (cmd);
+
+	path = _strcat(_strdup(getenv("PWD")), "/", cmd, NULL);
+	if (stat(path, &st) == 0)
+		return (path);
+
+	free(path);
+	printf("not found in current....\n");
+	paths = get_env_paths();
+
+	for (i = 0; (paths[i] != NULL && !is_path); i++)
+	{
+		paths[i] = _strcat(paths[i], "/", cmd, NULL);
+		printf("-> %s, [%d]\n", paths[i], i);
+		if (stat(paths[i], &st) == 0)
+			is_path = 1;
+	}
+
+	if (is_path)
+		path = _strdup(paths[i - 1]);
+	else
+		path = NULL;
+
+	for (i = 0; paths[i] != NULL; i++)
+		free(paths[i]);
+	
+	free(paths);
+	return (path);
+}
+
