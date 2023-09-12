@@ -1,81 +1,74 @@
-#include <stdio.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
 #include "shell.h"
-
-void clean(char *input, char **argv);
 
 /**
  * shell - the shell interface
- *	reads from stdin and execute the command given.
+ *      reads from stdin and execute the command given.
  *
  * Return: void
  */
 void shell(void)
 {
-	char *token, *input = NULL;
+	char *input = NULL;
 	size_t n = 0;
-	ssize_t rl, exe;
-	pid_t child_pid;
-	char **argv = NULL;
+	ssize_t rl;
 	short is_interactive = isatty(STDIN_FILENO);
-	char **env = environ;
 
-	while (should_prompt(is_interactive) &&
+		while (should_prompt(is_interactive) &&
 			(rl = getline(&input, &n, stdin) > -1))
 	{
-		child_pid = fork();
-		switch (child_pid)
-		{
-			case -1:
-				free(input);
-				perror("fork error:");
-				exit(EXIT_FAILURE);
-			case 0:
-				token = strtok(input, "\n");
-				if (token)
-				{
-					argv = get_argv(input);
-					exe = execve(input, argv, env);
-					if (exe == -1)
-						perror("");
-				}
-				clean(input, argv);
-				exit(1);
-			default:
-				wait(NULL);
-				/*free(input);*/
-		}
-		/*print_prompt();*/
+		execute(input);
 	}
 
 	free(input);
 }
 
 /**
- * clean - free allocated memory
- * @input: string allocated for the getline function.
- * @argv: array of strings allocated to get args of the command.
+ * execute - parse input and execute the cmd if any.
+ * @input: input line to be parsed.
  *
  * Return: void
  */
-void clean(char *input, char **argv)
+void execute(char *input)
 {
-	int i;
+	char *inputcp, *cmd, *exe_path, **argv, **env = environ;
+	pid_t child_pid;
+	int exe;
 
-	free(input);
-	if (!argv)
+	inputcp = _strdup(input);
+	cmd = strtok(input, " \n");
+	if (!cmd)
+	{
+		free(inputcp);
 		return;
-	for (i = 0; argv[i]; i++)
-		free(argv[i]);
-
-	free(argv);
-
+	}
+	exe_path = get_path(cmd);
+	if (exe_path == NULL)
+	{
+		printf("it's NULL\n");
+		handle_exe_path_error(cmd);
+		free(inputcp);
+		return;
+	}
+	child_pid = fork();
+	switch (child_pid)
+	{
+		case -1:
+			_str_free_all(2, inputcp, exe_path);
+			perror("Error: fork(..)");
+			break;
+		case 0:
+			argv = get_argv(inputcp);
+			exe = execve(exe_path, argv, env);
+			if (exe == -1)
+			{
+				perror("Error: ");
+				_str_free_all(3, inputcp, input, exe_path);
+				free_argv(argv);
+				exit(EXIT_FAILURE);
+			}
+		default:
+			wait(NULL);
+			_str_free_all(2, inputcp, exe_path);
+	}
 }
 
