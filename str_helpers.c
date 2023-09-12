@@ -98,7 +98,7 @@ char *_strcat(char *src, ...)
  * Return: 1 if both string are strictly equal
  *		0 otherwise.
  */
-int _is_str_equal_str(char *s1, char *s2)
+int _are_strs_eql(char *s1, char *s2)
 {
 	size_t len1, len2, i;
 
@@ -116,5 +116,23 @@ int _is_str_equal_str(char *s1, char *s2)
 			return (0);
 	return (1);
 
+}
+
+/**
+ * _str_free_all - a variedic function
+ *			free allocated given strings from memory.
+ * @n: number of strings to be freed from memorry.
+ *
+ * Return: void.
+ */
+void _str_free_all(int n, ...)
+{
+	int i;
+	va_list ap;
+
+	va_start(ap, n);
+	for (int i = 0; i < n; i++)
+		free(va_arg(ap, char *));
+	va_end(ap);
 }
 

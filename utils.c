@@ -52,7 +52,7 @@ char *_get_env(char *key)
 	{
 		env_record = _strdup(env[i]);
 		token = strtok(env_record, "=");
-		if (_is_str_equal_str(key, token))
+		if (_are_strs_eql(key, token))
 		{
 			token = strtok(NULL, "=");
 			value = _strdup(token);
