@@ -75,6 +75,21 @@ char **get_argv(char *cmd)
 }
 
 /**
+ * free_argv - free the args vector.
+ * @argv: argv array of strings.
+ *
+ * Return: void
+ */
+void free_argv(char **argv)
+{
+	int i;
+
+	for (i = 0; argv[i]; i++)
+		free(argv[i]);
+	free(argv);
+}
+
+/**
  * get_env_paths - get the enviroment PATH
  *
  * Return: An array of strings containing the PATH env variable.
@@ -125,9 +140,9 @@ char *get_path(char *cmd)
 	struct stat st;
 
 	if (cmd[0] == '/' || cmd[0] == '.')
-		return (cmd);
+		return (_strdup(cmd));
 
-	path = _strcat(_strdup(getenv("PWD")), "/", cmd, NULL);
+	path = _strcat(_get_env("PWD"), "/", cmd, NULL);
 	if (stat(path, &st) == 0)
 		return (path);
 
@@ -138,7 +153,6 @@ char *get_path(char *cmd)
 	for (i = 0; (paths[i] != NULL && !is_path); i++)
 	{
 		paths[i] = _strcat(paths[i], "/", cmd, NULL);
-		printf("-> %s, [%d]\n", paths[i], i);
 		if (stat(paths[i], &st) == 0)
 			is_path = 1;
 	}
@@ -150,7 +164,7 @@ char *get_path(char *cmd)
 
 	for (i = 0; paths[i] != NULL; i++)
 		free(paths[i]);
-	
+
 	free(paths);
 	return (path);
 }
