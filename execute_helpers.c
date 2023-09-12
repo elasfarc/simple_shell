@@ -104,7 +104,15 @@ char *get_path(char *cmd)
 	struct stat st;
 
 	if (cmd[0] == '/' || cmd[0] == '.')
-		return (_strdup(cmd));
+	{
+		path = cmd[0] == '/'
+			? _strdup(cmd)
+			: _strcat(_get_env("PWD"), "/", cmd, NULL);
+		if (stat(path, &st) == 0)
+			return (path);
+		free(path);
+		return (NULL);
+	}
 
 	path = _strcat(_get_env("PWD"), "/", cmd, NULL);
 	if (stat(path, &st) == 0)

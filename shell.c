@@ -44,7 +44,6 @@ void execute(char *input)
 	exe_path = get_path(cmd);
 	if (exe_path == NULL)
 	{
-		printf("it's NULL\n");
 		handle_exe_path_error(cmd);
 		free(inputcp);
 		return;
@@ -66,6 +65,7 @@ void execute(char *input)
 				free_argv(argv);
 				exit(EXIT_FAILURE);
 			}
+			break;
 		default:
 			wait(NULL);
 			_str_free_all(2, inputcp, exe_path);

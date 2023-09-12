@@ -131,7 +131,7 @@ void _str_free_all(int n, ...)
 	va_list ap;
 
 	va_start(ap, n);
-	for (int i = 0; i < n; i++)
+	for (i = 0; i < n; i++)
 		free(va_arg(ap, char *));
 	va_end(ap);
 }
