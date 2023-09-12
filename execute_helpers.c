@@ -8,35 +8,35 @@
  */
 char **get_argv(char *cmd)
 {
-        char **argv, *token, *cmd_cp, *sep = " \n";
-        size_t i, argc = 0;
+	char **argv, *token, *cmd_cp, *sep = " \n";
+	size_t i, argc = 0;
 
-        cmd_cp = _strdup(cmd);
+	cmd_cp = _strdup(cmd);
 
-        token = strtok(cmd, sep);
-        while (token)
-        {
-                argc++;
-                token = strtok(NULL, sep);
-        }
-        argv = malloc((sizeof(char *) * argc) + sizeof(NULL)); /* +1 for last NULL*/
-        if (!argv)
-        {
-                perror("Error: malloc @get_argv(..)");
-                exit(1);
-        }
+	token = strtok(cmd, sep);
+	while (token)
+	{
+		argc++;
+		token = strtok(NULL, sep);
+	}
+	argv = malloc((sizeof(char *) * argc) + sizeof(NULL)); /* +1 for last NULL*/
+	if (!argv)
+	{
+		perror("Error: malloc @get_argv(..)");
+		exit(1);
+	}
 
-        token = strtok(cmd_cp, sep);
-        for (i = 0; i < argc; i++)
-        {
-                argv[i] = _strdup(token);
-                token = strtok(NULL, sep);
-        }
+	token = strtok(cmd_cp, sep);
+	for (i = 0; i < argc; i++)
+	{
+		argv[i] = _strdup(token);
+		token = strtok(NULL, sep);
+	}
 
-        argv[argc] = NULL;
+	argv[argc] = NULL;
 
-        free(cmd_cp);
-        return (argv);
+	free(cmd_cp);
+	return (argv);
 }
 
 /**
@@ -47,11 +47,11 @@ char **get_argv(char *cmd)
  */
 void free_argv(char **argv)
 {
-        int i;
+	int i;
 
-        for (i = 0; argv[i]; i++)
-                free(argv[i]);
-        free(argv);
+	for (i = 0; argv[i]; i++)
+		free(argv[i]);
+	free(argv);
 }
 
 /**
@@ -61,32 +61,32 @@ void free_argv(char **argv)
  */
 char **get_env_paths()
 {
-        char *path, *path_cp, *token, **paths, *sep = ":";
-        size_t i, pathes_n = 0;
+	char *path, *path_cp, *token, **paths, *sep = ":";
+	size_t i, pathes_n = 0;
 
-        path = getenv("PATH");
-        path_cp = _strdup(path);
+	path = getenv("PATH");
+	path_cp = _strdup(path);
 
-        token = strtok(path_cp, sep);
-        while (token)
-        {
-                pathes_n++;
-                token = strtok(NULL, sep);
-        }
-        free(path_cp);
-        paths = malloc((sizeof(char *) * pathes_n) + sizeof(NULL));
-        paths[pathes_n] = NULL;
+	token = strtok(path_cp, sep);
+	while (token)
+	{
+		pathes_n++;
+		token = strtok(NULL, sep);
+	}
+	free(path_cp);
+	paths = malloc((sizeof(char *) * pathes_n) + sizeof(NULL));
+	paths[pathes_n] = NULL;
 
-        path_cp = _strdup(path);
-        token = strtok(path_cp, sep);
-        for (i = 0; i < pathes_n; i++)
-        {
-                paths[i] = _strdup(token);
-                token = strtok(NULL, sep);
-        }
+	path_cp = _strdup(path);
+	token = strtok(path_cp, sep);
+	for (i = 0; i < pathes_n; i++)
+	{
+		paths[i] = _strdup(token);
+		token = strtok(NULL, sep);
+	}
 
-        free(path_cp);
-        return (paths);
+	free(path_cp);
+	return (paths);
 }
 
 /**
@@ -99,36 +99,58 @@ char **get_env_paths()
  */
 char *get_path(char *cmd)
 {
-        char **paths, *path;
-        int i, is_path = 0;
-        struct stat st;
+	char **paths, *path;
+	int i, is_path = 0;
+	struct stat st;
 
-        if (cmd[0] == '/' || cmd[0] == '.')
-                return (_strdup(cmd));
+	if (cmd[0] == '/' || cmd[0] == '.')
+		return (_strdup(cmd));
 
-        path = _strcat(_get_env("PWD"), "/", cmd, NULL);
-        if (stat(path, &st) == 0)
-                return (path);
+	path = _strcat(_get_env("PWD"), "/", cmd, NULL);
+	if (stat(path, &st) == 0)
+		return (path);
 
-        free(path);
-        paths = get_env_paths();
-        for (i = 0; (paths[i] != NULL && !is_path); i++)
-        {
-                paths[i] = _strcat(paths[i], "/", cmd, NULL);
-                if (stat(paths[i], &st) == 0)
-                        is_path = 1;
-        }
+	free(path);
+	paths = get_env_paths();
+	for (i = 0; (paths[i] != NULL && !is_path); i++)
+	{
+		paths[i] = _strcat(paths[i], "/", cmd, NULL);
+		if (stat(paths[i], &st) == 0)
+			is_path = 1;
+	}
 
-        if (is_path)
-                path = _strdup(paths[i - 1]);
-        else
-                path = NULL;
+	if (is_path)
+		path = _strdup(paths[i - 1]);
+	else
+		path = NULL;
 
-        for (i = 0; paths[i] != NULL; i++)
-                free(paths[i]);
+	for (i = 0; paths[i] != NULL; i++)
+		free(paths[i]);
 
-        free(paths);
-        return (path);
+	free(paths);
+	return (path);
 }
 
+/**
+ * handle_exe_path_error - prints to stderr where no such execute path.
+ * @cmd: the command that has no execute path.
+ *
+ * Return: void
+ */
+
+void handle_exe_path_error(char *cmd)
+{
+	char *program_path, *error_msg;
+
+	program_path = _get_env("_");
+	program_path = (program_path) ? program_path : "hsh";
+
+	error_msg = _strcat(_strdup(program_path),
+			": 1: ", cmd, ": not found\n", NULL);
+
+	write(STDERR_FILENO, error_msg, _strlen(error_msg));
+
+	free(error_msg);
+	free(program_path);
+}
 
