@@ -34,3 +34,27 @@ void print_prompt(void)
 	}
 }
 
+
+/**
+ * handle_error - prints to stderr the associated error message.
+ * @cmd: command that encountered an issue at its execution.
+ *
+ * Return: void
+ */
+void handle_error(char *cmd)
+{
+	char *program_path, *error_msg, *e;
+
+	e = _itoa(errno);
+
+	program_path = _get_env("_");
+	program_path = (program_path) ? program_path : "hsh";
+	error_msg = _strcat(_strdup(program_path), ": ", e, ": ", cmd, ": ", NULL);
+	
+	write(STDERR_FILENO, error_msg, _strlen(error_msg));
+	fflush(stderr);
+	perror("");
+
+	_str_free_all(3, error_msg, program_path, e);
+}
+
