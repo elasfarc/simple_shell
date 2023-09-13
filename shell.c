@@ -3,6 +3,7 @@
 #define EXE_SUCCESS (0)
 #define EXE_ERR (-1)
 #define FORK_ERR (-2)
+#define EXEPATH_ERR (-3)
 
 /**
  * shell - the shell interface
@@ -14,37 +15,37 @@ void shell(void)
 {
 	char *input = NULL, *inputcp, *cmd, *exe_path;
 	size_t n = 0;
-	ssize_t rl, exe;
-	short is_exit, is_interactive = isatty(STDIN_FILENO);
+	ssize_t rl, execute_result;
+	short isExitCommand, isEnvCommand, is_interactive = isatty(STDIN_FILENO);
 
 		while (should_prompt(is_interactive) &&
 			(rl = getline(&input, &n, stdin) > -1))
 	{
 		inputcp = _strdup(input);
 		cmd = strtok(input, " \n");
-		is_exit = _are_strs_eql(cmd, "exit");
-		if (is_exit)
+		isExitCommand = _are_strs_eql(cmd, "exit");
+		isEnvCommand = _are_strs_eql(cmd, "env");
+
+		if (isEnvCommand)
+			print_env();
+		else if (isExitCommand)
 		{
 			_str_free_all(2, input, inputcp);
 			exit(0);
 		}
-		if (cmd)
+		else if (cmd)
 		{
 			exe_path = get_path(cmd);
-			if (exe_path)
-			{
-				exe = execute(exe_path, inputcp);
-				if (exe != EXE_SUCCESS)
-					handle_error(cmd);
-				if (exe == EXE_ERR) /*child process fail executing */
-				{
-					_str_free_all(3, input, inputcp, exe_path);
-					exit(EXIT_FAILURE);
-				}
-				free(exe_path);
-			}
-			else
+			execute_result = execute(exe_path, inputcp);
+			if (execute_result != EXE_SUCCESS)
 				handle_error(cmd);
+			if (execute_result == EXE_ERR) /*child process fail executing */
+			{
+				_str_free_all(3, input, inputcp, exe_path);
+				exit(EXIT_FAILURE);
+			}
+			if (exe_path)
+				free(exe_path);
 		}
 		free(inputcp);
 	}
@@ -64,6 +65,8 @@ int execute(char *exe_path, char *input)
 	pid_t child_pid;
 	int exe;
 
+	if (!exe_path)
+		return (EXEPATH_ERR);
 	child_pid = fork();
 	switch (child_pid)
 	{

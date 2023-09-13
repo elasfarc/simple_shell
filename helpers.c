@@ -58,3 +58,22 @@ void handle_error(char *cmd)
 	_str_free_all(3, error_msg, program_path, e);
 }
 
+/**
+ * print_env - print enviroment variables.
+ *
+ * Return: void
+ */
+void print_env(void)
+{
+	char **env = environ, *env_records = NULL;
+	int i;
+
+	for (i = 0; env[i] != NULL; i++)
+		env_records = env_records ?
+			_strcat(env_records, env[i], "\n", NULL)
+			: _strcat(_strdup(env[i]), "\n", NULL);
+
+	write(STDOUT_FILENO, env_records, _strlen(env_records));
+	free(env_records);
+}
+

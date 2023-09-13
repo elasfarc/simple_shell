@@ -19,6 +19,7 @@ int execute(char *, char *);
 void print_prompt(void);
 int should_prompt(short);
 void handle_error(char *);
+void print_env(void);
 
 void *_realloc(void *ptr, size_t old_size, size_t new_size);
 char *_get_env(char *key);
