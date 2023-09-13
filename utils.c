@@ -62,3 +62,41 @@ char *_get_env(char *key)
 	}
 	return (value);
 }
+
+/**
+ * _itoa - convert an integer to it's ASCII representation.
+ * @n: number to be converted.
+ *
+ * Return: ASCII representation string.
+ */
+
+char *_itoa(int n)
+{
+	char *ascii;
+	int bytes = 0, is_neg, is_zero, i, j, abs;
+
+	is_neg = n < 0 ? 1 : 0;
+	is_zero = n == 0 ? 1 : 0;
+	abs = is_neg ? (n * -1) : n;
+
+	if (is_zero)
+		bytes = 1;
+	else
+		for (i = abs; i > 0; i /= 10)
+			bytes++;
+
+	bytes += (is_neg);
+	ascii = malloc((sizeof(char) * bytes) + 1);
+
+	if (!ascii)
+		return (NULL);
+
+	if (is_neg)
+		ascii[0] = '-';
+	for ((i = bytes - 1, j = abs); i >= (is_neg ? 1 : 0); (i--, j/=10))
+		ascii[i] = ((j % 10) + '0');
+
+	ascii[bytes] = '\0';
+	return (ascii);
+}
+
