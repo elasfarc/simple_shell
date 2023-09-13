@@ -15,12 +15,14 @@
 extern char **environ;
 
 void shell(void);
-void execute(char *);
+int execute(char *, char *);
 void print_prompt(void);
 int should_prompt(short);
+void handle_error(char *);
 
 void *_realloc(void *ptr, size_t old_size, size_t new_size);
 char *_get_env(char *key);
+char *_itoa(int);
 
 size_t _strlen(char *);
 char *_strdup(char *);
@@ -32,6 +34,5 @@ char **get_argv(char *);
 void free_argv(char **argv);
 char **get_env_paths();
 char *get_path(char *);
-void handle_exe_path_error(char *cmd);
 
 #endif

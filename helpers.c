@@ -50,7 +50,7 @@ void handle_error(char *cmd)
 	program_path = _get_env("_");
 	program_path = (program_path) ? program_path : "hsh";
 	error_msg = _strcat(_strdup(program_path), ": ", e, ": ", cmd, ": ", NULL);
-	
+
 	write(STDERR_FILENO, error_msg, _strlen(error_msg));
 	fflush(stderr);
 	perror("");

@@ -93,7 +93,7 @@ char *_itoa(int n)
 
 	if (is_neg)
 		ascii[0] = '-';
-	for ((i = bytes - 1, j = abs); i >= (is_neg ? 1 : 0); (i--, j/=10))
+	for ((i = bytes - 1, j = abs); i >= (is_neg ? 1 : 0); (i--, j /= 10))
 		ascii[i] = ((j % 10) + '0');
 
 	ascii[bytes] = '\0';

@@ -91,7 +91,7 @@ char *_strcat(char *src, ...)
 }
 
 /**
- * _is_str_equal_str - checks if @s1 is strictly equal @s2
+ * _are_strs_eql - checks if @s1 is strictly equal @s2
  * @s1: First string.
  * @s2: Second string.
  *

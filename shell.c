@@ -1,5 +1,9 @@
 #include "shell.h"
 
+#define EXE_SUCCESS (0)
+#define EXE_ERR (-1)
+#define FORK_ERR (-2)
+
 /**
  * shell - the shell interface
  *      reads from stdin and execute the command given.
@@ -8,67 +12,75 @@
  */
 void shell(void)
 {
-	char *input = NULL;
+	char *input = NULL, *inputcp, *cmd, *exe_path;
 	size_t n = 0;
-	ssize_t rl;
-	short is_interactive = isatty(STDIN_FILENO);
+	ssize_t rl, exe;
+	short is_exit, is_interactive = isatty(STDIN_FILENO);
 
 		while (should_prompt(is_interactive) &&
 			(rl = getline(&input, &n, stdin) > -1))
 	{
-		execute(input);
+		inputcp = _strdup(input);
+		cmd = strtok(input, " \n");
+		is_exit = _are_strs_eql(cmd, "exit");
+		if (is_exit)
+		{
+			_str_free_all(2, input, inputcp);
+			exit(0);
+		}
+		if (cmd)
+		{
+			exe_path = get_path(cmd);
+			if (exe_path)
+			{
+				exe = execute(exe_path, inputcp);
+				if (exe != EXE_SUCCESS)
+					handle_error(cmd);
+				if (exe == EXE_ERR) /*child process fail executing */
+				{
+					_str_free_all(3, input, inputcp, exe_path);
+					exit(EXIT_FAILURE);
+				}
+				free(exe_path);
+			}
+			else
+				handle_error(cmd);
+		}
+		free(inputcp);
 	}
-
 	free(input);
 }
 
 /**
  * execute - parse input and execute the cmd if any.
+ * @exe_path: the found execution path (argv[0]).
  * @input: input line to be parsed.
  *
  * Return: void
  */
-void execute(char *input)
+int execute(char *exe_path, char *input)
 {
-	char *inputcp, *cmd, *exe_path, **argv, **env = environ;
+	char **argv, **env = environ;
 	pid_t child_pid;
 	int exe;
 
-	inputcp = _strdup(input);
-	cmd = strtok(input, " \n");
-	if (!cmd)
-	{
-		free(inputcp);
-		return;
-	}
-	exe_path = get_path(cmd);
-	if (exe_path == NULL)
-	{
-		handle_exe_path_error(cmd);
-		free(inputcp);
-		return;
-	}
 	child_pid = fork();
 	switch (child_pid)
 	{
 		case -1:
-			_str_free_all(2, inputcp, exe_path);
-			perror("Error: fork(..)");
-			break;
+			return (FORK_ERR);
 		case 0:
-			argv = get_argv(inputcp);
+			argv = get_argv(input);
 			exe = execve(exe_path, argv, env);
 			if (exe == -1)
 			{
-				perror("Error: ");
-				_str_free_all(3, inputcp, input, exe_path);
 				free_argv(argv);
-				exit(EXIT_FAILURE);
+				return (EXE_ERR);
 			}
 			break;
 		default:
 			wait(NULL);
-			_str_free_all(2, inputcp, exe_path);
 	}
+	return (0);
 }
 
