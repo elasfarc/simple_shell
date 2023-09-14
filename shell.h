@@ -31,6 +31,8 @@ char *_strcat(char *src, ...);
 int _are_strs_eql(char *, char *);
 void _str_free_all(int n, ...);
 
+char *_strtok(char *s, char *delim);
+
 char **get_argv(char *);
 void free_argv(char **argv);
 char **get_env_paths();

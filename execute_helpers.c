@@ -13,11 +13,11 @@ char **get_argv(char *cmd)
 
 	cmd_cp = _strdup(cmd);
 
-	token = strtok(cmd, sep);
+	token = _strtok(cmd, sep);
 	while (token)
 	{
 		argc++;
-		token = strtok(NULL, sep);
+		token = _strtok(NULL, sep);
 	}
 	argv = malloc((sizeof(char *) * argc) + sizeof(NULL)); /* +1 for last NULL*/
 	if (!argv)
@@ -26,11 +26,11 @@ char **get_argv(char *cmd)
 		exit(1);
 	}
 
-	token = strtok(cmd_cp, sep);
+	token = _strtok(cmd_cp, sep);
 	for (i = 0; i < argc; i++)
 	{
 		argv[i] = _strdup(token);
-		token = strtok(NULL, sep);
+		token = _strtok(NULL, sep);
 	}
 
 	argv[argc] = NULL;
@@ -67,22 +67,22 @@ char **get_env_paths()
 	path = getenv("PATH");
 	path_cp = _strdup(path);
 
-	token = strtok(path_cp, sep);
+	token = _strtok(path_cp, sep);
 	while (token)
 	{
 		pathes_n++;
-		token = strtok(NULL, sep);
+		token = _strtok(NULL, sep);
 	}
 	free(path_cp);
 	paths = malloc((sizeof(char *) * pathes_n) + sizeof(NULL));
 	paths[pathes_n] = NULL;
 
 	path_cp = _strdup(path);
-	token = strtok(path_cp, sep);
+	token = _strtok(path_cp, sep);
 	for (i = 0; i < pathes_n; i++)
 	{
 		paths[i] = _strdup(token);
-		token = strtok(NULL, sep);
+		token = _strtok(NULL, sep);
 	}
 
 	free(path_cp);

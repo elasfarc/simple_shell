@@ -51,10 +51,10 @@ char *_get_env(char *key)
 	for (i = 0; (env[i] != NULL && !is_match); i++)
 	{
 		env_record = _strdup(env[i]);
-		token = strtok(env_record, "=");
+		token = _strtok(env_record, "=");
 		if (_are_strs_eql(key, token))
 		{
-			token = strtok(NULL, "=");
+			token = _strtok(NULL, "=");
 			value = _strdup(token);
 			is_match = 1;
 		}

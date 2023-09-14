@@ -22,7 +22,7 @@ void shell(void)
 			(rl = getline(&input, &n, stdin) > -1))
 	{
 		inputcp = _strdup(input);
-		cmd = strtok(input, " \n");
+		cmd = _strtok(input, " \n");
 		isExitCommand = _are_strs_eql(cmd, "exit");
 		isEnvCommand = _are_strs_eql(cmd, "env");
 
