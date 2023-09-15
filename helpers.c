@@ -77,6 +77,18 @@ void print_env(void)
 	free(env_records);
 }
 
+/**
+ * handle_exit - handle the exit command.
+ * @ascii_int: the status ASCII integer after the exit command.
+ * @count_to_free: number of strings to be freed on case of valid exit status.
+ *
+ * Description: if @ascii_int is NULL or a valid positive ASCII integer
+ *			free number of @count_to_free variadic args
+ *			exit with the given code or (0) if @ascii_int is NULL
+ *		else if it's neither NULL or not a valid integer
+ *			write to the stderr and does not exit.
+ * Return: void
+ */
 void handle_exit(const char *ascii_int, int count_to_free, ...)
 {
 	va_list stringListToFree;
@@ -87,7 +99,8 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 
 	if (ascii_int == NULL)
 		*exit_code_ptr = EXIT_SUCCESS;
-	else {
+	else
+	{
 		atoi = _atoi(ascii_int);
 		if (!atoi)
 			handle_error("exit");
@@ -102,7 +115,8 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 	{
 		program_path = _get_env("_");
 		program_path = (program_path) ? program_path : _strdup("hsh");
-		error_msg = _strcat(_strdup(program_path), ": 7: exit: Illegal number: ",ascii_int, "\n", NULL);
+		error_msg = _strcat(_strdup(program_path),
+				": 7: exit: Illegal number: ", ascii_int, "\n", NULL);
 		write(STDERR_FILENO, error_msg, _strlen(error_msg));
 		_str_free_all(2, program_path, error_msg);
 	}

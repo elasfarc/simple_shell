@@ -100,6 +100,15 @@ char *_itoa(int n)
 	return (ascii);
 }
 
+/**
+ * _atoi - converts a string to an integer.
+ * @ASCII: string to be converted.
+ *
+ * Return: a pointer to atoi_t type.
+ *		has two members is_valid and integer
+ *		if the string provided is a valid integer
+ *			is_valid is set to (1) or (0) otherwise.
+ */
 atoi_t *_atoi(const char *ASCII)
 {
 	#define RADIX (10)
@@ -108,12 +117,13 @@ atoi_t *_atoi(const char *ASCII)
 	int zero_idx_ascci_len;
 
 	atoi_t *atoi = malloc(sizeof(atoi_t));
+
 	if (!atoi)
 		return (NULL);
 	if (!ASCII)
 	{
 		atoi->is_vaild = 0;
-		return atoi;
+		return (atoi);
 	}
 	zero_idx_ascci_len = _strlen(ASCII) - 1;
 	if (ASCII[0] == '-')
@@ -134,6 +144,6 @@ atoi_t *_atoi(const char *ASCII)
 	atoi->is_vaild = is_valid_number;
 	atoi->integer = is_negative ? (integer * -1) : integer;
 
-	return atoi;
+	return (atoi);
 }
 

@@ -14,10 +14,17 @@
 
 extern char **environ;
 
+/**
+ * struct atoi_s - ascii to integer strtuct.
+ * @is_vaild: A flag to indicate if the string provided is valid
+ *		and could be converted to an integer.
+ * @integer: the converted integer from the provided string.
+ */
 typedef struct atoi_s
 {
 	int is_vaild, integer;
 } atoi_t;
+
 
 void shell(void);
 int execute(char *, char *);
