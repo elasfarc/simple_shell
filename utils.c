@@ -100,3 +100,40 @@ char *_itoa(int n)
 	return (ascii);
 }
 
+atoi_t *_atoi(const char *ASCII)
+{
+	#define RADIX (10)
+	#define ZERO_ASCII (48)
+	int i, integer = 0, is_negative = 0, is_valid_number = 1;
+	int zero_idx_ascci_len;
+
+	atoi_t *atoi = malloc(sizeof(atoi_t));
+	if (!atoi)
+		return (NULL);
+	if (!ASCII)
+	{
+		atoi->is_vaild = 0;
+		return atoi;
+	}
+	zero_idx_ascci_len = _strlen(ASCII) - 1;
+	if (ASCII[0] == '-')
+	{
+		is_negative = 1;
+		ASCII = ASCII + 1;
+		zero_idx_ascci_len -= 1;
+	}
+
+	for (i = 0; (ASCII[i] != '\0' && is_valid_number); i++)
+	{
+		if (ASCII[i] >= '0' && ASCII[i] <= '9')
+			integer += (ASCII[i] - ZERO_ASCII) * _pow(RADIX, zero_idx_ascci_len - i);
+		else
+			is_valid_number = 0;
+	}
+
+	atoi->is_vaild = is_valid_number;
+	atoi->integer = is_negative ? (integer * -1) : integer;
+
+	return atoi;
+}
+

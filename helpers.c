@@ -48,7 +48,7 @@ void handle_error(char *cmd)
 	e = _itoa(errno);
 
 	program_path = _get_env("_");
-	program_path = (program_path) ? program_path : "hsh";
+	program_path = (program_path) ? program_path : _strdup("hsh");
 	error_msg = _strcat(_strdup(program_path), ": ", e, ": ", cmd, ": ", NULL);
 
 	write(STDERR_FILENO, error_msg, _strlen(error_msg));
@@ -75,5 +75,44 @@ void print_env(void)
 
 	write(STDOUT_FILENO, env_records, _strlen(env_records));
 	free(env_records);
+}
+
+void handle_exit(const char *ascii_int, int count_to_free, ...)
+{
+	va_list stringListToFree;
+	int i;
+	unsigned char exit_code, *exit_code_ptr = &exit_code;
+	char *error_msg, *program_path;
+	atoi_t *atoi;
+
+	if (ascii_int == NULL)
+		*exit_code_ptr = EXIT_SUCCESS;
+	else {
+		atoi = _atoi(ascii_int);
+		if (!atoi)
+			handle_error("exit");
+		if (atoi->is_vaild && atoi->integer > 0)
+			*exit_code_ptr = atoi->integer;
+		else
+			exit_code_ptr = NULL;
+		free(atoi);
+	}
+
+	if (exit_code_ptr == NULL)
+	{
+		program_path = _get_env("_");
+		program_path = (program_path) ? program_path : _strdup("hsh");
+		error_msg = _strcat(_strdup(program_path), ": 7: exit: Illegal number: ",ascii_int, "\n", NULL);
+		write(STDERR_FILENO, error_msg, _strlen(error_msg));
+		_str_free_all(2, program_path, error_msg);
+	}
+	else
+	{
+		va_start(stringListToFree, count_to_free);
+		for (i = 0; i < count_to_free; i++)
+			free(va_arg(stringListToFree, char *));
+		va_end(stringListToFree);
+		exit(exit_code);
+	}
 }
 

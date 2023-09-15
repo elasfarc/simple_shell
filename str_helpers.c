@@ -6,7 +6,7 @@
  *
  * Return: size_t -> length of the string.
  */
-size_t _strlen(char *s)
+size_t _strlen(const char *s)
 {
 	if (!s)
 	{

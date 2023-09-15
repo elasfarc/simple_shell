@@ -29,10 +29,7 @@ void shell(void)
 		if (isEnvCommand)
 			print_env();
 		else if (isExitCommand)
-		{
-			_str_free_all(2, input, inputcp);
-			exit(0);
-		}
+			handle_exit(_strtok(NULL, " \n"), 2, input, inputcp);
 		else if (cmd)
 		{
 			exe_path = get_path(cmd);

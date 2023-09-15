@@ -14,18 +14,27 @@
 
 extern char **environ;
 
+typedef struct atoi_s
+{
+	int is_vaild, integer;
+} atoi_t;
+
 void shell(void);
 int execute(char *, char *);
 void print_prompt(void);
 int should_prompt(short);
 void handle_error(char *);
 void print_env(void);
+void handle_exit(const char *, int, ...);
 
 void *_realloc(void *ptr, size_t old_size, size_t new_size);
 char *_get_env(char *key);
 char *_itoa(int);
+atoi_t *_atoi(const char *);
 
-size_t _strlen(char *);
+int _pow(int, int);
+
+size_t _strlen(const char *);
 char *_strdup(char *);
 char *_strcat(char *src, ...);
 int _are_strs_eql(char *, char *);
@@ -35,7 +44,7 @@ char *_strtok(char *s, char *delim);
 
 char **get_argv(char *);
 void free_argv(char **argv);
-char **get_env_paths();
+char **get_env_paths(void);
 char *get_path(char *);
 
 #endif
