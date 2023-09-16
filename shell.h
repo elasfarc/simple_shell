@@ -39,6 +39,8 @@ char *_get_env(char *key);
 char *_itoa(int);
 atoi_t *_atoi(const char *);
 
+char **cpy_env(void);
+
 int _pow(int, int);
 
 size_t _strlen(const char *);
