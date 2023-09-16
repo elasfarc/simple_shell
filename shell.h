@@ -45,6 +45,7 @@ void free_env(char **env);
 int modify_record_in_env(const char *name, const char *value, char **env);
 int add_new_record_to_env(const char *name, const char *value, char ***envptr);
 int _setenv(const char *name, const char *value);
+int _unsetenv(const char *name);
 
 int _pow(int, int);
 
