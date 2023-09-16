@@ -5,6 +5,12 @@
 #define FORK_ERR (-2)
 #define EXEPATH_ERR (-3)
 
+
+#define IS_EXIT(cmd) (_are_strs_eql(cmd, "exit"))
+#define IS_ENV(cmd) (_are_strs_eql(cmd, "env"))
+#define IS_ENV_CHANGE(cmd)  \
+	(_are_strs_eql(cmd, "setenv") || _are_strs_eql(cmd, "unsetenv"))
+
 /**
  * shell - the shell interface
  *      reads from stdin and execute the command given.
@@ -16,19 +22,19 @@ void shell(void)
 	char *input = NULL, *inputcp, *cmd, *exe_path;
 	size_t n = 0;
 	ssize_t rl, execute_result;
-	short isExitCommand, isEnvCommand, is_interactive = isatty(STDIN_FILENO);
+	short is_interactive = isatty(STDIN_FILENO);
 
 		while (should_prompt(is_interactive) &&
 			(rl = getline(&input, &n, stdin) > -1))
 	{
 		inputcp = _strdup(input);
 		cmd = _strtok(input, " \n");
-		isExitCommand = _are_strs_eql(cmd, "exit");
-		isEnvCommand = _are_strs_eql(cmd, "env");
 
-		if (isEnvCommand)
+		if (IS_ENV(cmd))
 			print_env();
-		else if (isExitCommand)
+		else if (IS_ENV_CHANGE(cmd))
+			handle_env_change(inputcp);
+		else if (IS_EXIT(cmd))
 			handle_exit(_strtok(NULL, " \n"), 2, input, inputcp);
 		else if (cmd)
 		{
@@ -39,6 +45,7 @@ void shell(void)
 			if (execute_result == EXE_ERR) /*child process fail executing */
 			{
 				_str_free_all(3, input, inputcp, exe_path);
+				free_env(environ);
 				exit(EXIT_FAILURE);
 			}
 			if (exe_path)

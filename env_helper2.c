@@ -80,3 +80,69 @@ int _unsetenv(const char *name)
 
 	return (1);
 }
+
+/**
+ * handle_env_change - parses a command string with arguments
+ *	and attempts to modify the environment variables
+ *	based on the provided command.
+ * @cmd_with_args: The command string with arguments to be processed.
+ *
+ * Description:
+ * - The command string is expected to follow the format:
+ *	"setenv VARIABLE_NAME VARIABLE_VALUE" for setting an environment variable,
+ *	or "unsetenv VARIABLE_NAME" for unsetting an environment variable.
+ * - If the provided command is not in the correct format or the number of
+ *       arguments does not match the expected count for the specified command,
+ *       an error message is printed to the standard error (stderr) stream.
+ * - If the operation to set or unset the environment variable fails, an
+ *       error message is also printed to stderr.
+ * - The function does not free it's arg.
+ *
+ * Return: void.
+ */
+
+
+void handle_env_change(char *cmd_with_args)
+{
+	#define CHNG_ENV_WRONG_ARGS (8)
+	#define CHNG_ENV_FAIL (9)
+	/**
+	 * TODO:
+	 * case when cmd_with_args is null
+	 * case when argv[0] is not SET or UNSET
+	*/
+	char **argv, *cmd, *error;
+	unsigned short argc = 0, is_set, is_unset, is_success;
+
+	argv = get_argv(cmd_with_args);
+	cmd = argv[0];
+	is_set = _are_strs_eql(cmd, "setenv");
+	is_unset = _are_strs_eql(cmd, "unsetenv");
+
+	while (argv[argc])
+		argc++;
+
+	if ((is_set && argc != 3) || (is_unset && argc != 2))
+	{
+		error = is_set
+			? _strdup("Command syntax: setenv VARIABLE VALUE")
+			: _strdup("Command syntax: unsetenv VARIABLE");
+		handle_error(cmd, 1, CHNG_ENV_WRONG_ARGS, error);
+		free(error);
+		free_argv(argv);
+		return;
+	}
+
+	is_success = is_set
+		? _setenv(argv[1], argv[2])
+		: _unsetenv(argv[1]);
+	if (!is_success)
+	{
+		error = _strcat(_strdup("ERROR: "), argv[1], " NOT",
+				(is_set ? "set" : "unset"));
+		handle_error(cmd, 1, CHNG_ENV_FAIL, error);
+		free(error);
+	}
+	free_argv(argv);
+}
+

@@ -38,35 +38,44 @@ void print_prompt(void)
 /**
  * handle_error - prints to stderr the associated error message.
  * @cmd: command that encountered an issue at its execution.
+ * @is_custom_error: A boolean flag that serves as an indicator,
+ *  allowing the function to discern whether the error number and error message
+ *  have been explicitly provided by the user
+ *  or if they should be obtained from the global `errno` variable
+ *  and the `perror()` function.
+ *  When set to `true`, it signifies the error information is user-defined;
+ *  when set to `false`, the function will retrieve and utilize
+ *  the error details from the system's standard error handling mechanisms.
  *
  * Description: if @is_custom_error variadic variables are as the following:
- * 			int error_num, char *error
- * 			
+ *			int error_num, char *error
+ *
  * Return: void
  */
 void handle_error(char *cmd, int is_custom_error, ...)
 {
 
 	char *program_path, *error_msg, *err_num, *custom_err;
-
 	va_list custom_err_args;
+
 	va_start(custom_err_args, is_custom_error);
 	err_num = _itoa((is_custom_error ?
 				va_arg(custom_err_args, int) : errno));
 
 	program_path = _get_env("_");
 	program_path = (program_path) ? program_path : _strdup("hsh");
-	
+
 	if (is_custom_error)
 	{
 		custom_err = va_arg(custom_err_args, char *);
-	 	error_msg = _strcat(_strdup(program_path), ": ", err_num, ": ",
+		error_msg = _strcat(_strdup(program_path), ": ", err_num, ": ",
 				cmd, ": ", custom_err, "\n", NULL);
 		write(STDERR_FILENO, error_msg, _strlen(error_msg));
 	}
 	else
 	{
-		error_msg = _strcat(_strdup(program_path), ": ", err_num, ": ", cmd, ": ", NULL);
+		error_msg = _strcat(_strdup(program_path),
+				": ", err_num, ": ", cmd, ": ", NULL);
 		write(STDERR_FILENO, error_msg, _strlen(error_msg));
 		fflush(stderr);
 		perror("");
@@ -123,7 +132,7 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 		atoi = _atoi(ascii_int);
 		if (!atoi)
 			handle_error("exit", 0);
-		if (atoi->is_vaild && atoi->integer > 0)
+		if (atoi->is_vaild && atoi->integer >= 0)
 			*exit_code_ptr = atoi->integer;
 		else
 			exit_code_ptr = NULL;
@@ -145,6 +154,7 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 		for (i = 0; i < count_to_free; i++)
 			free(va_arg(stringListToFree, char *));
 		va_end(stringListToFree);
+		free_env(environ);
 		exit(exit_code);
 	}
 }
