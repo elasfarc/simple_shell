@@ -40,6 +40,7 @@ char *_itoa(int);
 atoi_t *_atoi(const char *);
 
 char **cpy_env(void);
+void free_env(char **env);
 
 int _pow(int, int);
 

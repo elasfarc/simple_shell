@@ -5,7 +5,7 @@
  *
  * Return: A new Array of strings contianing enviroment variables records.
  */
-char **cpy_env()
+char **cpy_env(void)
 {
 	char **env = environ, **env_cpy;
 	int i, records = 0;
@@ -25,7 +25,20 @@ char **cpy_env()
 	return (env_cpy);
 }
 
+/**
+ * free_env - free enviroment variables Array of strings.
+ * @env: Array of enviroment variables records (NULL terminated).
+ *
+ * Return: void
+ */
+void free_env(char **env)
+{
+	int i;
 
+	for (i = 0; env[i] != NULL; i++)
+		free(env[i]);
+	free(env);
+}
 
 
 
