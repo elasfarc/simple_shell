@@ -39,23 +39,42 @@ void print_prompt(void)
  * handle_error - prints to stderr the associated error message.
  * @cmd: command that encountered an issue at its execution.
  *
+ * Description: if @is_custom_error variadic variables are as the following:
+ * 			int error_num, char *error
+ * 			
  * Return: void
  */
-void handle_error(char *cmd)
+void handle_error(char *cmd, int is_custom_error, ...)
 {
-	char *program_path, *error_msg, *e;
 
-	e = _itoa(errno);
+	char *program_path, *error_msg, *err_num, *custom_err;
+
+	va_list custom_err_args;
+	va_start(custom_err_args, is_custom_error);
+	err_num = _itoa((is_custom_error ?
+				va_arg(custom_err_args, int) : errno));
 
 	program_path = _get_env("_");
 	program_path = (program_path) ? program_path : _strdup("hsh");
-	error_msg = _strcat(_strdup(program_path), ": ", e, ": ", cmd, ": ", NULL);
+	
+	if (is_custom_error)
+	{
+		custom_err = va_arg(custom_err_args, char *);
+	 	error_msg = _strcat(_strdup(program_path), ": ", err_num, ": ",
+				cmd, ": ", custom_err, "\n", NULL);
+		write(STDERR_FILENO, error_msg, _strlen(error_msg));
+	}
+	else
+	{
+		error_msg = _strcat(_strdup(program_path), ": ", err_num, ": ", cmd, ": ", NULL);
+		write(STDERR_FILENO, error_msg, _strlen(error_msg));
+		fflush(stderr);
+		perror("");
+	}
 
-	write(STDERR_FILENO, error_msg, _strlen(error_msg));
-	fflush(stderr);
-	perror("");
+	_str_free_all(3, error_msg, program_path, err_num);
+	va_end(custom_err_args);
 
-	_str_free_all(3, error_msg, program_path, e);
 }
 
 /**
@@ -103,7 +122,7 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 	{
 		atoi = _atoi(ascii_int);
 		if (!atoi)
-			handle_error("exit");
+			handle_error("exit", 0);
 		if (atoi->is_vaild && atoi->integer > 0)
 			*exit_code_ptr = atoi->integer;
 		else

@@ -35,7 +35,7 @@ void shell(void)
 			exe_path = get_path(cmd);
 			execute_result = execute(exe_path, inputcp);
 			if (execute_result != EXE_SUCCESS)
-				handle_error(cmd);
+				handle_error(cmd, 0);
 			if (execute_result == EXE_ERR) /*child process fail executing */
 			{
 				_str_free_all(3, input, inputcp, exe_path);

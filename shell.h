@@ -30,7 +30,7 @@ void shell(void);
 int execute(char *, char *);
 void print_prompt(void);
 int should_prompt(short);
-void handle_error(char *);
+void handle_error(char *, int, ...);
 void print_env(void);
 void handle_exit(const char *, int, ...);
 
