@@ -39,15 +39,17 @@ char *_get_env(char *key);
 char *_itoa(int);
 atoi_t *_atoi(const char *);
 
+/* env helpers  */
 char **cpy_env(void);
 void free_env(char **env);
+int modify_record_in_env(const char *name, const char *value, char **env);
 
 int _pow(int, int);
 
 size_t _strlen(const char *);
 char *_strdup(char *);
 char *_strcat(char *src, ...);
-int _are_strs_eql(char *, char *);
+int _are_strs_eql(const char *, const char *);
 void _str_free_all(int n, ...);
 
 char *_strtok(char *s, char *delim);

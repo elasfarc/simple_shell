@@ -98,7 +98,7 @@ char *_strcat(char *src, ...)
  * Return: 1 if both string are strictly equal
  *		0 otherwise.
  */
-int _are_strs_eql(char *s1, char *s2)
+int _are_strs_eql(const char *s1, const char *s2)
 {
 	size_t len1, len2, i;
 
