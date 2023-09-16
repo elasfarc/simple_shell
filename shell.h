@@ -43,11 +43,12 @@ atoi_t *_atoi(const char *);
 char **cpy_env(void);
 void free_env(char **env);
 int modify_record_in_env(const char *name, const char *value, char **env);
+int add_new_record_to_env(const char *name, const char *value, char ***envptr);
 
 int _pow(int, int);
 
 size_t _strlen(const char *);
-char *_strdup(char *);
+char *_strdup(const char *);
 char *_strcat(char *src, ...);
 int _are_strs_eql(const char *, const char *);
 void _str_free_all(int n, ...);

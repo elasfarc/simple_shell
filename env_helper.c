@@ -77,7 +77,41 @@ int modify_record_in_env(const char *name, const char *value, char **env)
 	return (is_name_in_env);
 }
 
+/**
+ * add_new_record_to_env - Adds a new recode to the enviroment variables.
+ * @name: key of the new entry.
+ * @value: the value of the new entry.
+ * @envptr: points to a null terminated array of strings
+ *		representing the enviroment variables records.
+ *
+ * Return: (1) on Success, (0) otherwise.
+ */
+int add_new_record_to_env(const char *name, const char *value, char ***envptr)
+{
+	int i = 0;
+	size_t old_size, new_size;
+	char **env = *envptr;
 
+	while (env[i])
+		i++;
+
+	old_size = (sizeof(char *) * i);
+	new_size = (sizeof(char *) * (i + 1)) + sizeof(NULL);
+
+	 env = _realloc(env, old_size, new_size);
+
+	if (!env)
+		return (0);
+
+	env[i] = _strcat(_strdup(name), "=", value, NULL);
+	if (!env[i])
+		return (0);
+
+	env[i + 1] = NULL;
+
+	*envptr = env;
+	return (1);
+}
 
 
 

@@ -25,7 +25,7 @@ size_t _strlen(const char *s)
  *
  * Return: the new string.
  */
-char *_strdup(char *s)
+char *_strdup(const char *s)
 {
 	size_t i, len;
 	char *dup;
