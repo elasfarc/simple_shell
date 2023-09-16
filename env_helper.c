@@ -113,15 +113,3 @@ int add_new_record_to_env(const char *name, const char *value, char ***envptr)
 	return (1);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
