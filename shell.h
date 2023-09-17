@@ -48,6 +48,8 @@ int _setenv(const char *name, const char *value);
 int _unsetenv(const char *name);
 void handle_env_change(char *cmd_with_args);
 
+void handle_cd(char *cmd_with_args);
+
 int _pow(int, int);
 
 size_t _strlen(const char *);

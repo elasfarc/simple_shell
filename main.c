@@ -11,7 +11,7 @@ int main(void)
 
 	shell();
 
-	free_env(environ);
+	environ ? free_env(environ) : (void)0;
 	return (0);
 }
 

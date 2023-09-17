@@ -7,6 +7,7 @@
 
 
 #define IS_EXIT(cmd) (_are_strs_eql(cmd, "exit"))
+#define IS_CD(cmd) (_are_strs_eql(cmd, "cd"))
 #define IS_ENV(cmd) (_are_strs_eql(cmd, "env"))
 #define IS_ENV_CHANGE(cmd)  \
 	(_are_strs_eql(cmd, "setenv") || _are_strs_eql(cmd, "unsetenv"))
@@ -34,6 +35,8 @@ void shell(void)
 			print_env();
 		else if (IS_ENV_CHANGE(cmd))
 			handle_env_change(inputcp);
+		else if (IS_CD(cmd))
+			handle_cd(inputcp);
 		else if (IS_EXIT(cmd))
 			handle_exit(_strtok(NULL, " \n"), 2, input, inputcp);
 		else if (cmd)
