@@ -50,7 +50,7 @@ char *_strtok(char *s, char *delim)
 	if (token_start == -1)
 		return (NULL);
 
-	for (i = token_start + 1; string[i]; i++)
+	for (i = token_start; string[i]; i++)
 	{
 		if (charInString(string[i], delim))
 		{
