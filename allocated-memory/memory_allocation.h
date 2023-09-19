@@ -58,7 +58,9 @@ typedef struct AllocatedMemoryStack
 
 
 AllocatedMemoryStack *get_alloc_mem_stack();
-
+long int push_allocated_memory(AllocatedMemory *memory_alloc);
+int deallocate_memory(long);
+int pop_allocated_memory();
 
 
 #endif
