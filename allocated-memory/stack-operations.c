@@ -11,16 +11,17 @@ long int push_allocated_memory(AllocatedMemory *memory_alloc)
 {
 	AllocatedMemoryStack *stack = get_alloc_mem_stack();
 	AllocatedMemoryNode *node = malloc(sizeof(AllocatedMemoryNode));
+
 	node->id = (long int)node;
 	if (!node)
-		return 0;
+		return (0);
 	node->data = memory_alloc;
 	node->next = NULL;
-	node->prev = stack->tail ? stack->tail: NULL;
+	node->prev = stack->tail ? stack->tail : NULL;
 	stack->tail ? stack->tail->next = node : (void *)0;
 	stack->tail = node;
 	stack->head = stack->head ? stack->head : node;
-	return node->id;
+	return (node->id);
 }
 
 /**
@@ -35,7 +36,8 @@ int deallocate_memory(long id)
 {
 	AllocatedMemoryStack *stack = get_alloc_mem_stack();
 	AllocatedMemoryNode *current = stack->head;
-	while(current)
+
+	while (current)
 	{
 		if (current->id == id)
 		{
@@ -51,12 +53,12 @@ int deallocate_memory(long id)
 
 			safe_free(current->data);
 			safe_free(current);
-			return 1;
+			return (1);
 
 		}
 		current = current->next;
 	}
-	return 0;
+	return (0);
 }
 
 /**
@@ -65,12 +67,14 @@ int deallocate_memory(long id)
  * Return: 1 if a memory allocation is popped successfully,
  * 0 if the stack is empty.
  */
-int pop_allocated_memory()
+int pop_allocated_memory(void)
 {
 	AllocatedMemoryStack *stack = get_alloc_mem_stack();
+
 	if (!stack->tail)
-		return 0;
+		return (0);
 	AllocatedMemoryNode *to_be_removed = stack->tail;
+
 	stack->tail = stack->tail->prev;
 	if (stack->tail)
 		stack->tail->next = NULL;
@@ -78,6 +82,6 @@ int pop_allocated_memory()
 		stack->head = NULL;
 	safe_free(to_be_removed->data);
 	safe_free(to_be_removed);
-	return 1;
+	return (1);
 }
 
