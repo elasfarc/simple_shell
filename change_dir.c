@@ -72,7 +72,7 @@ void handle_error_and_free(char **argv, int *err)
 	if (err)
 		errno = *err;
 	handle_error(argv[0], 0);
-	free_argv(argv);
+	free_string_array(argv, NULL);
 }
 
 /**
@@ -134,21 +134,21 @@ void handle_cd_result(unsigned int res, char **argv, char *cwd, char *tgt_path)
 			err_cmd = _strcat(_strdup(argv[0]), ": ",
 					tgt_path ? tgt_path : "(null)", NULL);
 			handle_error(err_cmd, 0);
-			free(err_cmd);
+			safe_free(err_cmd);
 			break;
 		case CHDIR_SUCCESS:
 			current_env = cpy_env();
 			if (_setenv("OLDPWD", cwd) && _setenv("PWD", tgt_path))
-				free_env(current_env);
+				free_string_array(current_env, NULL);
 			else
 			{
-				free_env(environ);
+				free_string_array(environ, NULL);
 				environ = current_env;
 				errno = ECANCELED;
 				handle_error(argv[0], 0);
 			}
 	}
 	_str_free_all(2, cwd, tgt_path);
-	free_argv(argv);
+	free_string_array(argv, NULL);
 }
 

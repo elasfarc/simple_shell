@@ -102,7 +102,7 @@ void print_env(void)
 			: _strcat(_strdup(env[i]), "\n", NULL);
 
 	write(STDOUT_FILENO, env_records, _strlen(env_records));
-	free(env_records);
+	safe_free(env_records);
 }
 
 /**
@@ -136,7 +136,7 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 			*exit_code_ptr = atoi->integer;
 		else
 			exit_code_ptr = NULL;
-		free(atoi);
+		safe_free(atoi);
 	}
 
 	if (exit_code_ptr == NULL)

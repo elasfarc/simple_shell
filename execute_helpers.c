@@ -35,7 +35,7 @@ char **get_argv(char *cmd)
 
 	argv[argc] = NULL;
 
-	free(cmd_cp);
+	safe_free(cmd_cp);
 	return (argv);
 }
 
@@ -73,7 +73,7 @@ char **get_env_paths()
 		pathes_n++;
 		token = _strtok(NULL, sep);
 	}
-	free(path_cp);
+	safe_free(path_cp);
 	paths = malloc((sizeof(char *) * pathes_n) + sizeof(NULL));
 	paths[pathes_n] = NULL;
 
@@ -85,7 +85,7 @@ char **get_env_paths()
 		token = _strtok(NULL, sep);
 	}
 
-	free(path_cp);
+	safe_free(path_cp);
 	return (paths);
 }
 
@@ -110,7 +110,7 @@ char *get_path(char *cmd)
 			: _strcat(_get_env("PWD"), "/", cmd, NULL);
 		if (stat(path, &st) == 0)
 			return (path);
-		free(path);
+		safe_free(path);
 		return (NULL);
 	}
 
@@ -118,7 +118,7 @@ char *get_path(char *cmd)
 	if (stat(path, &st) == 0)
 		return (path);
 
-	free(path);
+	safe_free(path);
 	paths = get_env_paths();
 	for (i = 0; (paths[i] != NULL && !is_path); i++)
 	{
@@ -132,10 +132,7 @@ char *get_path(char *cmd)
 	else
 		path = NULL;
 
-	for (i = 0; paths[i] != NULL; i++)
-		free(paths[i]);
-
-	free(paths);
+	free_string_array(paths, NULL);
 	return (path);
 }
 
@@ -158,7 +155,7 @@ void handle_exe_path_error(char *cmd)
 
 	write(STDERR_FILENO, error_msg, _strlen(error_msg));
 
-	free(error_msg);
-	free(program_path);
+	safe_free(error_msg);
+	safe_free(program_path);
 }
 

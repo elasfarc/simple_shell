@@ -66,12 +66,12 @@ int modify_record_in_env(const char *name, const char *value, char **env)
 			if (!env[i])
 			{
 				env[i] = old_env_record;
-				free(env_record);
+				safe_free(env_record);
 				return (0);
 			}
-			free(old_env_record);
+			safe_free(old_env_record);
 		}
-		free(env_record);
+		safe_free(env_record);
 	}
 
 	return (is_name_in_env);

@@ -65,4 +65,8 @@ void free_argv(char **argv);
 char **get_env_paths(void);
 char *get_path(char *);
 
+/* frees  */
+void safe_free(void *v);
+void free_string_array(char **str_arr, const int *const length);
+
 #endif

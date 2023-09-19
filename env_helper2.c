@@ -23,11 +23,11 @@ int _setenv(const char *name, const char *value)
 
 	if (!is_modify_success && !is_add_new_success)
 	{
-		free_env(env_cpy);
+		free_string_array(env_cpy, NULL);
 		return (0);
 	}
 
-	free_env(env);
+	free_string_array(env, NULL);
 	environ = env_cpy;
 
 	return (1);
@@ -52,7 +52,7 @@ int _unsetenv(const char *name)
 		key = _strtok(env_record, "=");
 		if (_are_strs_eql(key, name))
 			is_name_in_env = 1;
-		free(env_record);
+		safe_free(env_record);
 	}
 
 	if (!is_name_in_env)
@@ -70,12 +70,12 @@ int _unsetenv(const char *name)
 		key = _strtok(env_record, "=");
 		if (!(_are_strs_eql(key, name)))
 			new_env[i] = _strdup(env[i]);
-		free(env_record);
+		safe_free(env_record);
 	}
 
 	new_env[i - 1] = NULL;
 
-	free_env(env);
+	free_string_array(env, NULL);
 	environ = new_env;
 
 	return (1);
@@ -128,8 +128,8 @@ void handle_env_change(char *cmd_with_args)
 			? _strdup("Command syntax: setenv VARIABLE VALUE")
 			: _strdup("Command syntax: unsetenv VARIABLE");
 		handle_error(cmd, 1, CHNG_ENV_WRONG_ARGS, error);
-		free(error);
-		free_argv(argv);
+		safe_free(error);
+		free_string_array(argv, NULL);
 		return;
 	}
 
@@ -141,8 +141,8 @@ void handle_env_change(char *cmd_with_args)
 		error = _strcat(_strdup("ERROR: "), argv[1], " NOT",
 				(is_set ? "set" : "unset"));
 		handle_error(cmd, 1, CHNG_ENV_FAIL, error);
-		free(error);
+		safe_free(error);
 	}
-	free_argv(argv);
+	free_string_array(argv, NULL);
 }
 

@@ -19,7 +19,7 @@ void *_realloc(void *ptr, size_t old_size, size_t new_size)
 		return (malloc(new_size));
 	if (ptr && new_size == 0)
 	{
-		free(ptr);
+		safe_free(ptr);
 		return (NULL);
 	}
 	old_ptr = ptr;
@@ -29,7 +29,7 @@ void *_realloc(void *ptr, size_t old_size, size_t new_size)
 	for (i = 0; i < stop_point; i++)
 		((char *)new_ptr)[i] = ((char *)old_ptr)[i];
 
-	free(old_ptr);
+	safe_free(old_ptr);
 	return (new_ptr);
 }
 
@@ -58,7 +58,7 @@ char *_get_env(char *key)
 			value = _strdup(token);
 			is_match = 1;
 		}
-		free(env_record);
+		safe_free(env_record);
 	}
 	return (value);
 }
