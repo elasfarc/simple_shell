@@ -1,12 +1,13 @@
 #include "shell.h"
+#include "memory_allocation.h"
 
 #include <signal.h>
 
-void sig_hadler(int sig)
+
+void sig_handler(int sig)
 {
-	printf("=== haha =(%d)==\n", sig);
-	signal(SIGINT, SIG_DFL);
-	raise(SIGINT);	
+	clean_allocated_memory();
+	exit(sig);
 }
 
 /**
@@ -16,12 +17,15 @@ void sig_hadler(int sig)
  */
 int main(void)
 {
-	signal(SIGINT, sig_hadler);
+	if (signal(SIGINT, sig_handler) == SIG_ERR)
+	{
+		perror("Failed to set custom signal handler");
+		return (1);
+	}
 	environ = cpy_env();
 
 	shell();
+	clean_allocated_memory();
 
-	environ ? free_env(environ) : (void)0;
 	return (0);
 }
-

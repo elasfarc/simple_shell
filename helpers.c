@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "memory_allocation.h"
 
 #define SHELL_SIGN ("($) ")
 
@@ -108,7 +109,6 @@ void print_env(void)
 /**
  * handle_exit - handle the exit command.
  * @ascii_int: the status ASCII integer after the exit command.
- * @count_to_free: number of strings to be freed on case of valid exit status.
  *
  * Description: if @ascii_int is NULL or a valid positive ASCII integer
  *			free number of @count_to_free variadic args
@@ -117,10 +117,8 @@ void print_env(void)
  *			write to the stderr and does not exit.
  * Return: void
  */
-void handle_exit(const char *ascii_int, int count_to_free, ...)
+void handle_exit(const char *ascii_int)
 {
-	va_list stringListToFree;
-	int i;
 	unsigned char exit_code, *exit_code_ptr = &exit_code;
 	char *error_msg, *program_path;
 	atoi_t *atoi;
@@ -150,12 +148,7 @@ void handle_exit(const char *ascii_int, int count_to_free, ...)
 	}
 	else
 	{
-		va_start(stringListToFree, count_to_free);
-		for (i = 0; i < count_to_free; i++)
-			free(va_arg(stringListToFree, char *));
-		va_end(stringListToFree);
-		free_env(environ);
+		clean_allocated_memory();
 		exit(exit_code);
 	}
 }
-

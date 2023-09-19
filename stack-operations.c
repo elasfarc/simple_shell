@@ -1,5 +1,5 @@
 #include "memory_allocation.h"
-#include "../shell.h"
+#include "shell.h"
 
 /**
  * push_allocated_memory - Pushes allocated memory onto the stack.
@@ -69,11 +69,12 @@ int deallocate_memory(long id)
  */
 int pop_allocated_memory(void)
 {
+	AllocatedMemoryNode *to_be_removed;
 	AllocatedMemoryStack *stack = get_alloc_mem_stack();
 
 	if (!stack->tail)
 		return (0);
-	AllocatedMemoryNode *to_be_removed = stack->tail;
+	to_be_removed = stack->tail;
 
 	stack->tail = stack->tail->prev;
 	if (stack->tail)
@@ -93,14 +94,13 @@ int pop_allocated_memory(void)
  */
 void clean_allocated_memory(void)
 {
-	int i
 	char *str, **str_arr;
 	AllocatedMemoryNode *top_node = get_top_allocated_memory();
+	alloc_type_t type;
 
 	while (top_node)
 	{
-		printf("topnode id: %ld\n", top_node->id);
-		alloc_type_t type = top_node->data->type;
+		type = top_node->data->type;
 
 		if (type == STRING)
 		{
@@ -110,7 +110,7 @@ void clean_allocated_memory(void)
 		else if (type == STRING_ARRAY)
 		{
 			str_arr = (char **)top_node->data->data;
-			free_string_array(arr, NULL);
+			free_string_array(str_arr, NULL);
 		}
 		deallocate_memory(top_node->id);
 		top_node = get_top_allocated_memory();
@@ -118,4 +118,3 @@ void clean_allocated_memory(void)
 	safe_free(get_alloc_mem_stack());
 	free_string_array(environ, NULL);
 }
-

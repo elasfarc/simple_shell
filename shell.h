@@ -32,7 +32,7 @@ void print_prompt(void);
 int should_prompt(short);
 void handle_error(char *, int, ...);
 void print_env(void);
-void handle_exit(const char *, int, ...);
+void handle_exit(const char *);
 
 void *_realloc(void *ptr, size_t old_size, size_t new_size);
 char *_get_env(char *key);

@@ -1,5 +1,5 @@
 #include "memory_allocation.h"
-#include "../shell.h"
+#include "shell.h"
 
 /**
  * init_alloc_mem_stack - Initializes an AllocatedMemoryStack.
