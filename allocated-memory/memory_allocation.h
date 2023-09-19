@@ -64,8 +64,9 @@ int deallocate_memory(long);
 int pop_allocated_memory(void);
 
 AllocatedMemoryNode *get_top_allocated_memory(void);
+void clean_allocated_memory(void);
 
 AllocatedMemory *create_allocated_memory(alloc_type_t type, void *data);
 
-
 #endif
+

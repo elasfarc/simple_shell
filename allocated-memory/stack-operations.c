@@ -85,3 +85,37 @@ int pop_allocated_memory(void)
 	return (1);
 }
 
+/**
+ * clean_allocated_memory - Cleans up all allocated memory on the stack
+ * and frees resources.
+ *
+ * Return: void
+ */
+void clean_allocated_memory(void)
+{
+	int i
+	char *str, **str_arr;
+	AllocatedMemoryNode *top_node = get_top_allocated_memory();
+
+	while (top_node)
+	{
+		printf("topnode id: %ld\n", top_node->id);
+		alloc_type_t type = top_node->data->type;
+
+		if (type == STRING)
+		{
+			str = (char *)top_node->data->data;
+			safe_free(str);
+		}
+		else if (type == STRING_ARRAY)
+		{
+			str_arr = (char **)top_node->data->data;
+			free_string_array(arr, NULL);
+		}
+		deallocate_memory(top_node->id);
+		top_node = get_top_allocated_memory();
+	}
+	safe_free(get_alloc_mem_stack());
+	free_string_array(environ, NULL);
+}
+
