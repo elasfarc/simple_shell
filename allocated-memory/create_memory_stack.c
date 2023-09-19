@@ -31,3 +31,20 @@ AllocatedMemoryStack *get_alloc_mem_stack()
 	return (mem_stack);
 }
 
+/**
+ * create_allocated_memory - Creates an allocated memory object.
+ * @type: The type of allocation (STRING/ STRING_ARRAY).
+ * @data: Pointer to the allocated memory data.
+ *
+ * Return: Pointer to the allocated memory object.
+ */
+AllocatedMemory *create_allocated_memory(alloc_type_t type, void *data)
+{
+	AllocatedMemory *mem = malloc(sizeof(AllocatedMemory));
+
+	/*handle fail malloc*/
+	mem->data = data;
+	mem->type = type;
+
+	return (mem);
+}
