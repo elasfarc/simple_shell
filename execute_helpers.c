@@ -1,14 +1,45 @@
 #include "shell.h"
 
 /**
- * get_argv - extract args and fill the argv
- * @cmd: string containing the whole command.
+ * get_argv - Split a string into an array of strings using default delimiters
+ * @key: The string to be split
  *
- * Return: arguments vector; array of strings NULL terminated.
+ * Description:
+ * This function takes a string `key` and splits it into an array of strings.
+ * using default delimiters " \n". It calls the `get_custom_delim_argv`
+ * function with these default delimiters.
+ *
+ * Return:
+ * - On success, returns a pointer to an array of strings.
+ * - On failure, returns NULL.
  */
-char **get_argv(char *cmd)
+char **get_argv(char *key)
 {
-	char **argv, *token, *cmd_cp, *sep = " \n";
+	char *delim = " \n";
+
+	return (get_custom_delim_argv(key, delim));
+}
+
+/**
+ * get_custom_delim_argv - Split a string into an array of strings using custom
+ * delimiters
+ * @cmd: The string to be split
+ * @sep: The string containing custom delimiters
+ *
+ * Description:
+ * This function takes a string `cmd` and splits it into an array of strings
+ * using custom delimiters specified in the `sep` parameter. It dynamically
+ * allocates memory for the resulting array and individual string elements.
+ * It also handles freeing the memory when it's no longer needed.
+ *
+ * Return:
+ * - On success, returns a pointer to an array of strings.
+ * - On failure, prints an error message and exits the program
+ *   with an error code.
+ */
+char **get_custom_delim_argv(char *cmd, char *sep)
+{
+	char **argv, *token, *cmd_cp;
 	size_t i, argc = 0;
 
 	cmd_cp = _strdup(cmd);
@@ -19,6 +50,7 @@ char **get_argv(char *cmd)
 		argc++;
 		token = _strtok(NULL, sep);
 	}
+
 	argv = malloc((sizeof(char *) * argc) + sizeof(NULL)); /* +1 for last NULL*/
 	if (!argv)
 	{
@@ -38,7 +70,6 @@ char **get_argv(char *cmd)
 	safe_free(cmd_cp);
 	return (argv);
 }
-
 /**
  * free_argv - free the args vector.
  * @argv: argv array of strings.
