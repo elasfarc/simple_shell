@@ -9,7 +9,7 @@
  */
 typedef enum alloc_type
 {
-	STRING, STRING_ARRAY
+	STRING, STRING_ARRAY, STRING_POINTER, LINKED_LIST_PTR
 } alloc_type_t;
 
 /**
@@ -68,5 +68,7 @@ void clean_allocated_memory(void);
 
 AllocatedMemory *create_allocated_memory(alloc_type_t type, void *data);
 
-#endif
 
+
+
+#endif

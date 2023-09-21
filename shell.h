@@ -31,8 +31,8 @@ int execute(char *, char *);
 void print_prompt(void);
 int should_prompt(short);
 void handle_error(char *, int, ...);
-void print_env(void);
-void handle_exit(const char *);
+int print_env(void);
+int handle_exit(const char *);
 
 void *_realloc(void *ptr, size_t old_size, size_t new_size);
 char *_get_env(char *key);
@@ -46,9 +46,9 @@ int modify_record_in_env(const char *name, const char *value, char **env);
 int add_new_record_to_env(const char *name, const char *value, char ***envptr);
 int _setenv(const char *name, const char *value);
 int _unsetenv(const char *name);
-void handle_env_change(char *cmd_with_args);
+int handle_env_change(char *cmd_with_args);
 
-void handle_cd(char *cmd_with_args);
+int handle_cd(char *cmd_with_args);
 
 int _pow(int, int);
 
@@ -59,6 +59,7 @@ int _are_strs_eql(const char *, const char *);
 void _str_free_all(int n, ...);
 
 char *_strtok(char *s, char *delim);
+char *_strslice(const char *str, int from, int to);
 
 char **get_argv(char *);
 char **get_custom_delim_argv(char *, char *);

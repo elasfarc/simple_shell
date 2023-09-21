@@ -1,11 +1,11 @@
 #include "shell.h"
 #include "memory_allocation.h"
+#include "conditional-commands.h"
 
 #define EXE_SUCCESS (0)
 #define EXE_ERR (-1)
 #define FORK_ERR (-2)
 #define EXEPATH_ERR (-3)
-
 
 #define IS_EXIT(cmd) (_are_strs_eql(cmd, "exit"))
 #define IS_CD(cmd) (_are_strs_eql(cmd, "cd"))
@@ -13,7 +13,71 @@
 #define IS_ENV_CHANGE(cmd)  \
 	(_are_strs_eql(cmd, "setenv") || _are_strs_eql(cmd, "unsetenv"))
 
-void parse_command(char *command_with_args);
+int parse_command(char *command_with_args);
+
+
+/**
+ * executeConditionalCommands - Execute Conditional Commands
+ * @conditional_cmd: The input string containing conditional commands
+ *
+ * Description:
+ * This function takes an input string `conditional_cmd` that contains
+ * conditional commands and executes them based on the defined
+ * logic (AND and OR operators).
+ * It parses the input into a ConditionalCommandList, processes each command
+ * in the list, and handles conditional logic as specified by the tokens.
+ *
+ * Parameters:
+ * - conditional_cmd: The string containing conditional commands to be executed
+ *
+ * Behavior:
+ * - The function first parses the input string into a ConditionalCommandList.
+ * - It processes each command in the list one by one, considering the command
+ * type (CMD) and the logic operators (AND, OR).
+ * - If a command's return value is zero (success) and the logic is OR,
+ * the function continues to the next command.
+ * - If a command's return value is non-zero (failure) and the logic is AND,
+ * the execution stops.
+ * - The function handles syntax errors and reports them to STDERR if necessary
+ *
+ * Note:
+ * - The function makes use of external functions such as `parse_command` and
+ *   `_strcat` for parsing and string manipulation.
+ */
+void executeConditionalCommands(char *conditional_cmd)
+{
+	int last_cmd_return;
+	long id;
+	ConditionalCommandList *list;
+	ConditionalCommand *node;
+
+	list = parse_cond_cmds(conditional_cmd);
+	id = push_allocated_memory(create_allocated_memory(LINKED_LIST_PTR, list));
+
+	if (!list->head)
+	{
+		char *err = _strcat(_strdup("syntax error near unexpected token "),
+		 (conditional_cmd[0] == '|' ? "|\n" : "&\n"), NULL);
+		write(STDERR_FILENO, err, _strlen(err));
+		safe_free(err);
+		/*generic_list_free(&list); */
+		/* deallocate_memory(id); */
+		return;
+	}
+	node = list->head;
+	while (node)
+	{
+		if (node->token_type == CMD)
+			last_cmd_return = parse_command(node->value);
+
+		else if ((last_cmd_return == 0 && node->token_type == OR) ||
+			(last_cmd_return != 0 && node->token_type == AND))
+			break;
+		node = node->next;
+	}
+	generic_list_free(list);
+	deallocate_memory(id);
+}
 
 /**
  * shell - the shell interface
@@ -23,33 +87,33 @@ void parse_command(char *command_with_args);
  */
 void shell(void)
 {
-	char *Input_line = NULL, **commands;
+	char *input_line = NULL, **Input_line_ptr = &input_line, **commands;
 	size_t i, n = 0;
 	ssize_t rl;
 	short is_interactive = isatty(STDIN_FILENO);
 	long mem_alloc_id, mem_alloc_id2;
 	AllocatedMemory *am1, *am2;
 
-	while (should_prompt(is_interactive) &&
-		(rl = getline(&Input_line, &n, stdin) > -1))
-	{
-		am1 = create_allocated_memory(STRING, Input_line);
-		mem_alloc_id = push_allocated_memory(am1);
+	 am1 = create_allocated_memory(STRING_POINTER, Input_line_ptr);
+	 mem_alloc_id = push_allocated_memory(am1);
 
-		commands = get_custom_delim_argv(Input_line, ";\n");
+	while (should_prompt(is_interactive) &&
+		(rl = getline(Input_line_ptr, &n, stdin) > -1))
+	{
+		commands = get_custom_delim_argv(*Input_line_ptr, ";\n");
 		am2 = create_allocated_memory(STRING_ARRAY, commands);
 		mem_alloc_id2 = push_allocated_memory(am2);
 
 		for (i = 0; commands[i]; i++)
 		{
-			parse_command(commands[i]);
+			executeConditionalCommands(commands[i]);
 		}
 
 		free_string_array(commands, NULL);
-		deallocate_memory(mem_alloc_id);
 		deallocate_memory(mem_alloc_id2);
 	}
-	safe_free(Input_line);
+	safe_free(input_line);
+	deallocate_memory(mem_alloc_id);
 }
 
 /**
@@ -58,7 +122,7 @@ void shell(void)
 *
 * Return: void
 */
-void parse_command(char *command_with_args)
+int parse_command(char *command_with_args)
 {
 	char  *command_with_args_cp, *command, *exe_path;
 	ssize_t execute_result;
@@ -70,33 +134,36 @@ void parse_command(char *command_with_args)
 	command = _strtok(command_with_args, " \n");
 
 	if (IS_ENV(command))
-		print_env();
+		execute_result = print_env();
 	else if (IS_ENV_CHANGE(command))
-		handle_env_change(command_with_args_cp);
+		execute_result = handle_env_change(command_with_args_cp);
 	else if (IS_CD(command))
-		handle_cd(command_with_args_cp);
+		execute_result = handle_cd(command_with_args_cp);
 	else if (IS_EXIT(command))
-		handle_exit(_strtok(NULL, " \n"));
+		execute_result = handle_exit(_strtok(NULL, " \n"));
 	else if (command)
 	{
 		exe_path = get_path(command);
+
 		id2 = push_allocated_memory(create_allocated_memory(STRING, exe_path));
 
 		execute_result = execute(exe_path, command_with_args_cp);
 		if (execute_result != EXE_SUCCESS)
 			handle_error(command, 0);
+
 		if (execute_result == EXE_ERR) /*child process fail executing */
 		{
 			clean_allocated_memory();
-			exit(EXIT_FAILURE);
+			exit(errno);
 		}
 		if (exe_path)
 			safe_free(exe_path);
 		deallocate_memory(id2);
+		execute_result = errno;
 	}
 	safe_free(command_with_args_cp);
-
 	deallocate_memory(id);
+	return (execute_result);
 }
 
 
@@ -111,17 +178,18 @@ int execute(char *exe_path, char *input)
 {
 	char **argv, **env = environ;
 	pid_t child_pid;
-	int exe;
+	int exe, status, child_exit_code;
 	long mem_alloc_id;
 	AllocatedMemory *am1;
 
 	if (!exe_path)
 		return (EXEPATH_ERR);
+
 	child_pid = fork();
 	switch (child_pid)
 	{
 		case -1:
-			return (FORK_ERR);
+			return (errno);
 		case 0:
 			argv = get_argv(input);
 			am1 = create_allocated_memory(STRING_ARRAY, argv);
@@ -136,7 +204,12 @@ int execute(char *exe_path, char *input)
 			}
 			break;
 		default:
-			wait(NULL);
+			wait(&status);
+			if (WIFEXITED(status))
+			{
+				child_exit_code = WEXITSTATUS(status);
+				errno = child_exit_code;
+			}
 	}
-	return (0);
+	return (EXE_SUCCESS);
 }
