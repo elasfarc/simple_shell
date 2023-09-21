@@ -101,3 +101,36 @@ char *_strslice(const char *str, int from, int to)
 	sliced[j] = '\0';
 	return (sliced);
 }
+
+/**
+ * trim - [side-effect] Removes leading and trailing spaces from a string.
+ *
+ * This function modifies the input string @str to remove any leading and
+ * trailing spaces. It returns a pointer to the first non-space character in
+ * the modified string.
+ *
+ * @str: The input string to trim (modified in-place).
+ *
+ * Return: A pointer to the first non-space character in the modified string.
+ */
+char *trim(char *const str)
+{
+	int i, len;
+
+	if (!str)
+		return (NULL);
+
+	len = _strlen(str);
+
+	for (i = len - 1; i >= 0; i--)
+		if (str[i] != ' ')
+			break;
+
+	str[i + 1] = '\0';
+
+	for (i = 0; i < len; i++)
+		if (str[i] != ' ')
+			break;
+
+	return (str + i);
+}

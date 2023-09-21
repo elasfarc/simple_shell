@@ -60,6 +60,7 @@ void _str_free_all(int n, ...);
 
 char *_strtok(char *s, char *delim);
 char *_strslice(const char *str, int from, int to);
+char *trim(char *const str);
 
 char **get_argv(char *);
 char **get_custom_delim_argv(char *, char *);

@@ -87,7 +87,7 @@ void executeConditionalCommands(char *conditional_cmd)
  */
 void shell(void)
 {
-	char *input_line = NULL, **Input_line_ptr = &input_line, **commands;
+	char *input_line = NULL, **Input_line_ptr = &input_line, **compound_commands;
 	size_t i, n = 0;
 	ssize_t rl;
 	short is_interactive = isatty(STDIN_FILENO);
@@ -100,16 +100,22 @@ void shell(void)
 	while (should_prompt(is_interactive) &&
 		(rl = getline(Input_line_ptr, &n, stdin) > -1))
 	{
-		commands = get_custom_delim_argv(*Input_line_ptr, ";\n");
-		am2 = create_allocated_memory(STRING_ARRAY, commands);
+		char *content_before_comment = _strtok(input_line, "#");
+
+		compound_commands = get_custom_delim_argv(content_before_comment, ";\n");
+		am2 = create_allocated_memory(STRING_ARRAY, compound_commands);
 		mem_alloc_id2 = push_allocated_memory(am2);
 
-		for (i = 0; commands[i]; i++)
+		for (i = 0; compound_commands[i]; i++)
 		{
-			executeConditionalCommands(commands[i]);
+			char *trimmed = trim(compound_commands[i]);
+			short is_empty_string = _are_strs_eql(trimmed, "");
+
+			if (!is_empty_string)
+				executeConditionalCommands(trimmed);
 		}
 
-		free_string_array(commands, NULL);
+		free_string_array(compound_commands, NULL);
 		deallocate_memory(mem_alloc_id2);
 	}
 	safe_free(input_line);

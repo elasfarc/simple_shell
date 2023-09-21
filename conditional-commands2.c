@@ -21,14 +21,12 @@ ConditionalCommandList *parse_cond_cmds(char *conditional_cmd)
 	ConditionalCommand *node;
 	ConditionalCommandList *list = create_conditional_command_List();
 
-	for (i = 0; (c = conditional_cmd[i]) != '\0'; i++)
-		if (c != ' ')
-			break;
-	if (conditional_cmd[i] == '|' || conditional_cmd[i] == '&')
+
+	if (conditional_cmd[0] == '|' || conditional_cmd[0] == '&')
 		return (list);
 
-	token_start = i;
-	for (; (c = conditional_cmd[i]) != '\0'; i++)
+	token_start = 0;
+	for (i = 0; (c = conditional_cmd[i]) != '\0'; i++)
 	{
 		next_c = conditional_cmd[i + 1];
 		if ((c == '|' && next_c == '|') || (c == '&' && next_c == '&'))
