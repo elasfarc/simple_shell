@@ -1,5 +1,6 @@
 #include "shell.h"
 
+
 /**
  * get_argv - Split a string into an array of strings using default delimiters
  * @key: The string to be split
@@ -101,7 +102,7 @@ char **get_env_paths()
 		paths[i] = _strdup(token);
 		token = _strtok(NULL, sep);
 	}
-	safe_free(path_cp);
+	safe_free(path);
 	safe_free(path_cp);
 	return (paths);
 }
