@@ -5,6 +5,8 @@
  * enum alloc_type - Enumeration of allocation types.
  * @STRING: Represents a single string allocation.
  * @STRING_ARRAY: Represents an array of strings allocation.
+ * @STRING_POINTER: Represents a pointer to a string.
+ * @LINKED_LIST_PTR: represents a pointer to a generic linked list.
  *
  */
 typedef enum alloc_type

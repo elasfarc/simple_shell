@@ -1,5 +1,7 @@
 #include "memory_allocation.h"
 #include "shell.h"
+#include "conditional-commands.h"
+
 
 /**
  * push_allocated_memory - Pushes allocated memory onto the stack.
@@ -112,9 +114,21 @@ void clean_allocated_memory(void)
 			str_arr = (char **)top_node->data->data;
 			free_string_array(str_arr, NULL);
 		}
+		else if (type == STRING_POINTER)
+		{
+
+			/*char **str_ptr = (char **)top_node->data->data; */
+			safe_free(*((char **)(top_node->data->data)));
+		}
+		else if (type == LINKED_LIST_PTR)
+		{
+
+			generic_list_free(top_node->data->data);
+		}
 		deallocate_memory(top_node->id);
 		top_node = get_top_allocated_memory();
 	}
 	safe_free(get_alloc_mem_stack());
 	free_string_array(environ, NULL);
+
 }

@@ -70,20 +70,6 @@ char **get_custom_delim_argv(char *cmd, char *sep)
 	safe_free(cmd_cp);
 	return (argv);
 }
-/**
- * free_argv - free the args vector.
- * @argv: argv array of strings.
- *
- * Return: void
- */
-void free_argv(char **argv)
-{
-	int i;
-
-	for (i = 0; argv[i]; i++)
-		free(argv[i]);
-	free(argv);
-}
 
 /**
  * get_env_paths - get the enviroment PATH
@@ -189,4 +175,3 @@ void handle_exe_path_error(char *cmd)
 	safe_free(error_msg);
 	safe_free(program_path);
 }
-

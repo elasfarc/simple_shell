@@ -7,7 +7,7 @@ unsigned int count_args(char **argv);
 void handle_error_and_free(char **argv, int *err);
 char *get_current_dir(char **argv);
 char *get_target_path(char **argv, unsigned int argc);
-int handle_cd_result(unsigned int, char **, char *, char *);
+int handle_cd_result(int, char **, char *, char *);
 /**
  * handle_cd - parse arguments passed to the CD command
  *		changes the current directory of the calling process.
@@ -123,7 +123,7 @@ char *get_target_path(char **argv, unsigned int argc)
  *
  * Return: void
  */
-int handle_cd_result(unsigned int res, char **argv, char *cwd, char *tgt_path)
+int handle_cd_result(int res, char **argv, char *cwd, char *tgt_path)
 {
 	char *err_cmd;
 	char **current_env;
