@@ -81,7 +81,7 @@ char **get_env_paths()
 	char *path, *path_cp, *token, **paths, *sep = ":";
 	size_t i, pathes_n = 0;
 
-	path = getenv("PATH");
+	path = _get_env("PATH");
 	path_cp = _strdup(path);
 
 	token = _strtok(path_cp, sep);
