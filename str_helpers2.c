@@ -65,3 +65,39 @@ char *_strtok(char *s, char *delim)
 	return (string + token_start);
 }
 
+/**
+ * _strslice - Slice a portion of a string
+ * @str: The input string to be sliced
+ * @from: The starting index of the slice (inclusive)
+ * @to: The ending index of the slice (inclusive)
+ *
+ * Description:
+ * This function takes an input string `str` and slices a portion of it,
+ * starting from the index `from` (inclusive) to the index `to` (inclusive).
+ * It allocates memory for the sliced string and returns a pointer to
+ * the sliced string.
+ * If `str` is NULL or if memory allocation fails, the function returns NULL.
+ *
+ * Return:
+ * On success, a pointer to the sliced string is returned.
+ * On failure (if `str` is NULL or if memory allocation fails),
+ * NULL is returned.
+ */
+char *_strslice(const char *str, int from, int to)
+{
+	char *sliced;
+	int i, j;
+
+	if (!str)
+		return (NULL);
+	/* TODO handle negative values */
+	sliced = malloc((sizeof(char) * (to - from)) + 1 + 1);
+	if (!sliced)
+		return (NULL);
+
+	for ((j = 0, i = from); (i <= to && str[i] != '\0'); (i++, j++))
+		sliced[j] = str[i];
+
+	sliced[j] = '\0';
+	return (sliced);
+}
