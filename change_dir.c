@@ -7,7 +7,7 @@ unsigned int count_args(char **argv);
 void handle_error_and_free(char **argv, int *err);
 char *get_current_dir(char **argv);
 char *get_target_path(char **argv, unsigned int argc);
-void handle_cd_result(unsigned int, char **, char *, char *);
+int handle_cd_result(unsigned int, char **, char *, char *);
 /**
  * handle_cd - parse arguments passed to the CD command
  *		changes the current directory of the calling process.
@@ -16,7 +16,7 @@ void handle_cd_result(unsigned int, char **, char *, char *);
  *
  * Return: void
  */
-void handle_cd(char *cmd_with_args)
+int handle_cd(char *cmd_with_args)
 {
 	char **argv, *current_dir, *target_path = NULL;
 	unsigned int argc = 0, cd_result;
@@ -28,19 +28,19 @@ void handle_cd(char *cmd_with_args)
 	{
 		err_num = E2BIG;
 		handle_error_and_free(argv, &err_num);
-		return;
+		return (E2BIG);
 	}
 
 	current_dir = get_current_dir(argv);
 	if (!current_dir)
 	{
-		return;
+		return (errno);
 	}
 
 	target_path = get_target_path(argv, argc);
 
 	cd_result = chdir(target_path);
-	handle_cd_result(cd_result, argv, current_dir, target_path);
+	return (handle_cd_result(cd_result, argv, current_dir, target_path));
 }
 
 /**
@@ -123,10 +123,11 @@ char *get_target_path(char **argv, unsigned int argc)
  *
  * Return: void
  */
-void handle_cd_result(unsigned int res, char **argv, char *cwd, char *tgt_path)
+int handle_cd_result(unsigned int res, char **argv, char *cwd, char *tgt_path)
 {
 	char *err_cmd;
 	char **current_env;
+	int is_update = 0;
 
 	switch (res)
 	{
@@ -138,7 +139,8 @@ void handle_cd_result(unsigned int res, char **argv, char *cwd, char *tgt_path)
 			break;
 		case CHDIR_SUCCESS:
 			current_env = cpy_env();
-			if (_setenv("OLDPWD", cwd) && _setenv("PWD", tgt_path))
+			is_update = _setenv("OLDPWD", cwd) && _setenv("PWD", tgt_path);
+			if (is_update)
 				free_string_array(current_env, NULL);
 			else
 			{
@@ -150,5 +152,5 @@ void handle_cd_result(unsigned int res, char **argv, char *cwd, char *tgt_path)
 	}
 	_str_free_all(2, cwd, tgt_path);
 	free_string_array(argv, NULL);
+	return (res == CHDIR_FAIL ?  errno : !(res == CHDIR_SUCCESS && is_update));
 }
-

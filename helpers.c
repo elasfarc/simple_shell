@@ -92,18 +92,20 @@ void handle_error(char *cmd, int is_custom_error, ...)
  *
  * Return: void
  */
-void print_env(void)
+int print_env(void)
 {
 	char **env = environ, *env_records = NULL;
 	int i;
+	ssize_t  written_bytes;
 
 	for (i = 0; env[i] != NULL; i++)
 		env_records = env_records ?
 			_strcat(env_records, env[i], "\n", NULL)
 			: _strcat(_strdup(env[i]), "\n", NULL);
 
-	write(STDOUT_FILENO, env_records, _strlen(env_records));
+	written_bytes = write(STDOUT_FILENO, env_records, _strlen(env_records));
 	safe_free(env_records);
+	return (!(written_bytes != -1));
 }
 
 /**
@@ -117,7 +119,7 @@ void print_env(void)
  *			write to the stderr and does not exit.
  * Return: void
  */
-void handle_exit(const char *ascii_int)
+int handle_exit(const char *ascii_int)
 {
 	unsigned char exit_code, *exit_code_ptr = &exit_code;
 	char *error_msg, *program_path;
@@ -151,4 +153,5 @@ void handle_exit(const char *ascii_int)
 		clean_allocated_memory();
 		exit(exit_code);
 	}
+	return (E2BIG);
 }

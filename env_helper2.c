@@ -98,19 +98,19 @@ int _unsetenv(const char *name)
  *       error message is also printed to stderr.
  * - The function does not free it's arg.
  *
+ * TODO:
+ * case when cmd_with_args is null
+ * case when argv[0] is not SET or UNSET
+ *
  * Return: void.
  */
 
 
-void handle_env_change(char *cmd_with_args)
+int handle_env_change(char *cmd_with_args)
 {
 	#define CHNG_ENV_WRONG_ARGS (8)
 	#define CHNG_ENV_FAIL (9)
-	/**
-	 * TODO:
-	 * case when cmd_with_args is null
-	 * case when argv[0] is not SET or UNSET
-	*/
+
 	char **argv, *cmd, *error;
 	unsigned short argc = 0, is_set, is_unset, is_success;
 
@@ -130,7 +130,7 @@ void handle_env_change(char *cmd_with_args)
 		handle_error(cmd, 1, CHNG_ENV_WRONG_ARGS, error);
 		safe_free(error);
 		free_string_array(argv, NULL);
-		return;
+		return (CHNG_ENV_WRONG_ARGS);
 	}
 
 	is_success = is_set
@@ -144,5 +144,6 @@ void handle_env_change(char *cmd_with_args)
 		safe_free(error);
 	}
 	free_string_array(argv, NULL);
-}
 
+	return (is_success ? 0 : 1);
+}
