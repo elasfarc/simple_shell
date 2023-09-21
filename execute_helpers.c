@@ -101,7 +101,7 @@ char **get_env_paths()
 		paths[i] = _strdup(token);
 		token = _strtok(NULL, sep);
 	}
-
+	safe_free(path_cp);
 	safe_free(path_cp);
 	return (paths);
 }
