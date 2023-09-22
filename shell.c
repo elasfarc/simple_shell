@@ -80,6 +80,35 @@ void executeConditionalCommands(char *conditional_cmd)
 }
 
 /**
+ * get_content_befor_comment - Extracts content before
+ * a comment symbol in a string.
+ *
+ * @line: The input string from which to extract content (modified in-place).
+ *
+ * Description: This function modifies the input string @line
+ * to remove any content that appears after a `#` character,
+ * including the `#` character itself, only if the `#` is preceded by a space
+ * or if it's the first character in the string.
+ * The modified string is then returned.
+ *
+ * Return: A pointer to the modified string with content before
+ * the comment symbol.
+ */
+char *get_content_befor_comment(char *const line)
+{
+	int i;
+
+	for (i = 0; line[i] != '\0'; i++)
+		if (line[i] == '#')
+			if (i == 0 || line[i - 1] == ' ')
+			{
+				line[i] = '\0';
+				break;
+			}
+	return (line);
+}
+
+/**
  * shell - the shell interface
  *      reads from stdin and execute the command given.
  *
@@ -100,7 +129,7 @@ void shell(void)
 	while (should_prompt(is_interactive) &&
 		(rl = getline(Input_line_ptr, &n, stdin) > -1))
 	{
-		char *content_before_comment = _strtok(input_line, "#");
+		char *content_before_comment = get_content_befor_comment(input_line);
 
 		compound_commands = get_custom_delim_argv(content_before_comment, ";\n");
 		am2 = create_allocated_memory(STRING_ARRAY, compound_commands);
