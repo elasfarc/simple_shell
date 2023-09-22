@@ -35,7 +35,6 @@ void print_prompt(void)
 	}
 }
 
-
 /**
  * handle_error - prints to stderr the associated error message.
  * @cmd: command that encountered an issue at its execution.
@@ -56,35 +55,30 @@ void print_prompt(void)
 void handle_error(char *cmd, int is_custom_error, ...)
 {
 
-	char *program_path, *error_msg, *err_num, *custom_err;
+	char *program_path, *error_msg, *custom_err;
 	va_list custom_err_args;
-
-	va_start(custom_err_args, is_custom_error);
-	err_num = _itoa((is_custom_error ?
-				va_arg(custom_err_args, int) : errno));
 
 	program_path = _get_env("_");
 	program_path = (program_path) ? program_path : _strdup("hsh");
 
 	if (is_custom_error)
 	{
+		va_start(custom_err_args, is_custom_error);
 		custom_err = va_arg(custom_err_args, char *);
-		error_msg = _strcat(_strdup(program_path), ": ", err_num, ": ",
+		error_msg = _strcat(_strdup(program_path), ": ",
 				cmd, ": ", custom_err, "\n", NULL);
 		write(STDERR_FILENO, error_msg, _strlen(error_msg));
+		va_end(custom_err_args);
 	}
 	else
 	{
 		error_msg = _strcat(_strdup(program_path),
-				": ", err_num, ": ", cmd, ": ", NULL);
+				 ": ", cmd, ": ", NULL);
 		write(STDERR_FILENO, error_msg, _strlen(error_msg));
 		fflush(stderr);
 		perror("");
 	}
-
-	_str_free_all(3, error_msg, program_path, err_num);
-	va_end(custom_err_args);
-
+	_str_free_all(2, error_msg, program_path);
 }
 
 /**

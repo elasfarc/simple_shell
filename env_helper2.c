@@ -127,7 +127,7 @@ int handle_env_change(char *cmd_with_args)
 		error = is_set
 			? _strdup("Command syntax: setenv VARIABLE VALUE")
 			: _strdup("Command syntax: unsetenv VARIABLE");
-		handle_error(cmd, 1, CHNG_ENV_WRONG_ARGS, error);
+		handle_error(cmd, 1, error);
 		safe_free(error);
 		free_string_array(argv, NULL);
 		return (CHNG_ENV_WRONG_ARGS);
@@ -140,7 +140,7 @@ int handle_env_change(char *cmd_with_args)
 	{
 		error = _strcat(_strdup("ERROR: "), argv[1], " NOT",
 				(is_set ? "set" : "unset"));
-		handle_error(cmd, 1, CHNG_ENV_FAIL, error);
+		handle_error(cmd, 1, error);
 		safe_free(error);
 	}
 	free_string_array(argv, NULL);
