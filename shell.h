@@ -26,7 +26,7 @@ typedef struct atoi_s
 } atoi_t;
 
 
-void shell(void);
+int shell(void);
 int execute(char *, char *);
 void print_prompt(void);
 int should_prompt(short);

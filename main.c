@@ -28,6 +28,8 @@ void sig_handler(int sig)
  */
 int main(void)
 {
+	int last_cmd_return;
+
 	if (signal(SIGINT, sig_handler) == SIG_ERR)
 	{
 		perror("Failed to set custom signal handler");
@@ -35,8 +37,8 @@ int main(void)
 	}
 	environ = cpy_env();
 
-	shell();
+	last_cmd_return = shell();
 	clean_allocated_memory();
 
-	return (0);
+	return (last_cmd_return);
 }

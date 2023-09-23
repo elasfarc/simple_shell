@@ -27,8 +27,7 @@ int parse_command(char *command_with_args);
  * It parses the input into a ConditionalCommandList, processes each command
  * in the list, and handles conditional logic as specified by the tokens.
  *
- * Parameters:
- * - conditional_cmd: The string containing conditional commands to be executed
+ * Return: the last executed command result within a compound command.
  *
  * Behavior:
  * - The function first parses the input string into a ConditionalCommandList.
@@ -44,7 +43,7 @@ int parse_command(char *command_with_args);
  * - The function makes use of external functions such as `parse_command` and
  *   `_strcat` for parsing and string manipulation.
  */
-void executeConditionalCommands(char *conditional_cmd)
+int executeConditionalCommands(char *conditional_cmd)
 {
 	int last_cmd_return;
 	long id;
@@ -62,7 +61,7 @@ void executeConditionalCommands(char *conditional_cmd)
 		safe_free(err);
 		/*generic_list_free(&list); */
 		/* deallocate_memory(id); */
-		return;
+		return (2);
 	}
 	node = list->head;
 	while (node)
@@ -77,6 +76,7 @@ void executeConditionalCommands(char *conditional_cmd)
 	}
 	generic_list_free(list);
 	deallocate_memory(id);
+	return (last_cmd_return);
 }
 
 /**
@@ -114,7 +114,7 @@ char *get_content_befor_comment(char *const line)
  *
  * Return: void
  */
-void shell(void)
+int shell(void)
 {
 	char *input_line = NULL, **Input_line_ptr = &input_line, **compound_commands;
 	size_t i, n = 0;
@@ -122,6 +122,7 @@ void shell(void)
 	short is_interactive = isatty(STDIN_FILENO);
 	long mem_alloc_id, mem_alloc_id2;
 	AllocatedMemory *am1, *am2;
+	int last_cmd_result = 0;
 
 	 am1 = create_allocated_memory(STRING_POINTER, Input_line_ptr);
 	 mem_alloc_id = push_allocated_memory(am1);
@@ -141,7 +142,7 @@ void shell(void)
 			short is_empty_string = _are_strs_eql(trimmed, "");
 
 			if (!is_empty_string)
-				executeConditionalCommands(trimmed);
+				last_cmd_result = executeConditionalCommands(trimmed);
 		}
 
 		free_string_array(compound_commands, NULL);
@@ -149,6 +150,7 @@ void shell(void)
 	}
 	safe_free(input_line);
 	deallocate_memory(mem_alloc_id);
+	return (last_cmd_result);
 }
 
 /**
