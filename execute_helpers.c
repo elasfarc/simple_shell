@@ -1,6 +1,5 @@
 #include "shell.h"
 
-
 /**
  * get_argv - Split a string into an array of strings using default delimiters
  * @key: The string to be split
@@ -105,74 +104,4 @@ char **get_env_paths()
 	safe_free(path);
 	safe_free(path_cp);
 	return (paths);
-}
-
-/**
- * get_path - get the full path of a @cmd if any
- * @cmd: the command to get it's full path from PATH enviroment variable.
- *
- * Return: the @cmd if it starts with '/' or '.'
- *              ,the full path of the command from the first match of PATH
- *              otherwise NULL
- */
-char *get_path(char *cmd)
-{
-	char **paths, *path;
-	int i, is_path = 0;
-	struct stat st;
-
-	if (cmd[0] == '/' || cmd[0] == '.')
-	{
-		path = cmd[0] == '/'
-			? _strdup(cmd)
-			: _strcat(_get_env("PWD"), "/", cmd, NULL);
-		if (stat(path, &st) == 0)
-			return (path);
-		safe_free(path);
-		return (NULL);
-	}
-
-	path = _strcat(_get_env("PWD"), "/", cmd, NULL);
-	if (stat(path, &st) == 0)
-		return (path);
-
-	safe_free(path);
-	paths = get_env_paths();
-	for (i = 0; (paths[i] != NULL && !is_path); i++)
-	{
-		paths[i] = _strcat(paths[i], "/", cmd, NULL);
-		if (stat(paths[i], &st) == 0)
-			is_path = 1;
-	}
-
-	if (is_path)
-		path = _strdup(paths[i - 1]);
-	else
-		path = NULL;
-
-	free_string_array(paths, NULL);
-	return (path);
-}
-
-/**
- * handle_exe_path_error - prints to stderr where no such execute path.
- * @cmd: the command that has no execute path.
- *
- * Return: void
- */
-
-void handle_exe_path_error(char *cmd)
-{
-	char *program_path, *error_msg;
-
-	program_path = _get_env("_");
-	program_path = (program_path) ? program_path : "hsh";
-
-	error_msg = _strcat(_strdup(program_path),
-			": 1: ", cmd, ": not found\n", NULL);
-
-	write(STDERR_FILENO, error_msg, _strlen(error_msg));
-
-	safe_free(error_msg);
-	safe_free(program_path);
 }

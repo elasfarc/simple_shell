@@ -15,6 +15,19 @@
 extern char **environ;
 
 /**
+ * enum CmdExecStatus - Enumeration representing the execution status
+ * of a command.
+ * @IS_EXECUTABLE: Indicates that a command is executable.
+ * @IS_NOT_EXECUTABLE: Indicates that a command is not executable.
+ * @IS_EXEC_DIRECTORY: Indicates that a command is a directory
+ * and cannot be executed.
+ */
+enum CmdExecStatus
+{
+	IS_EXECUTABLE, IS_NOT_EXECUTABLE, IS_EXEC_DIRECTORY
+};
+
+/**
  * struct atoi_s - ascii to integer strtuct.
  * @is_vaild: A flag to indicate if the string provided is valid
  *		and could be converted to an integer.
@@ -61,6 +74,7 @@ void _str_free_all(int n, ...);
 char *_strtok(char *s, char *delim);
 char *_strslice(const char *str, int from, int to);
 char *trim(char *const str);
+int charInString(char c, char *string);
 
 char **get_argv(char *);
 char **get_custom_delim_argv(char *, char *);

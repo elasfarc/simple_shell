@@ -181,21 +181,21 @@ int parse_command(char *command_with_args)
 	else if (command)
 	{
 		exe_path = get_path(command);
-
-		id2 = push_allocated_memory(create_allocated_memory(STRING, exe_path));
-
-		execute_result = execute(exe_path, command_with_args_cp);
-		if (execute_result != EXE_SUCCESS)
-			handle_error(command, 0);
-
-		if (execute_result == EXE_ERR) /*child process fail executing */
-		{
-			clean_allocated_memory();
-			exit(errno);
-		}
 		if (exe_path)
+		{
+			id2 = push_allocated_memory(create_allocated_memory(STRING, exe_path));
+			execute_result = execute(exe_path, command_with_args_cp);
+			if (execute_result != EXE_SUCCESS)
+				handle_error(command, 0);
+
+			if (execute_result == EXE_ERR) /*child process fail executing */
+			{
+				clean_allocated_memory();
+				exit(errno);
+			}
 			safe_free(exe_path);
-		deallocate_memory(id2);
+			deallocate_memory(id2);
+		}
 		execute_result = errno;
 	}
 	safe_free(command_with_args_cp);
@@ -219,8 +219,6 @@ int execute(char *exe_path, char *input)
 	long mem_alloc_id;
 	AllocatedMemory *am1;
 
-	if (!exe_path)
-		return (EXEPATH_ERR);
 
 	child_pid = fork();
 	switch (child_pid)
