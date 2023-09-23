@@ -31,10 +31,7 @@ char *_strdup(const char *s)
 	char *dup;
 
 	if (!s)
-	{
-		perror("string at _strdup(..) is NULL");
-		exit(1);
-	}
+		return (NULL);
 
 	len = _strlen(s) + 1;
 	dup = malloc(sizeof(char) * len);
@@ -135,4 +132,3 @@ void _str_free_all(int n, ...)
 		safe_free(va_arg(ap, char *));
 	va_end(ap);
 }
-
